@@ -36,26 +36,17 @@ export async function POST(request) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
 
-    // Membangun riwayat percakapan untuk AI
-    let chatHistoryForAI = history.map(msg => ({
+    const chatHistoryForAI = history.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }]
     }));
 
-    // PERBAIKAN: Pastikan pesan pertama selalu dari 'user'
-    // Jika pesan pertama dari AI (model), hapus dari riwayat untuk AI
-    if (chatHistoryForAI.length > 0 && chatHistoryForAI[0].role === 'model') {
-        chatHistoryForAI = chatHistoryForAI.slice(1);
-    }
-    
     const fullPrompt = createChatPrompt(message, context);
     
-    // Memulai sesi chat dengan riwayat yang sudah bersih
     const chat = model.startChat({ history: chatHistoryForAI });
     const result = await chat.sendMessage(fullPrompt);
     const reply = result.response.text();
     
-    // Siapkan data pesan baru untuk disimpan
     const userMessageData = { sender: 'user', text: message, timestamp: new Date() };
     const aiMessageData = { sender: 'ai', text: reply.trim(), timestamp: new Date() };
     const allNewMessages = [userMessageData, aiMessageData];
@@ -72,14 +63,18 @@ export async function POST(request) {
       // Jika tidak ada chatId, BUAT percakapan BARU
       const title = context.type === 'scan_result' 
           ? `Percakapan tentang ${context.data.aiScanResult.display_name}`
+          : context.type === 'journal_entry'
+          ? `Diskusi Jurnal Minggu ke-${context.data.week}`
           : `Percakapan Umum`;
 
-      // 'history' dari frontend mungkin berisi pesan sambutan AI, kita gabungkan
+      // PERBAIKAN: Menyediakan fallback yang aman untuk profileId
+      const profileIdToSave = context.profileId || userProfile.activeProfileId || userId;
+
       const initialMessages = history.map(msg => ({...msg, timestamp: new Date()}));
 
       chatDocRef = await db.collection('chats').add({
         userId,
-        profileId: context.profileId || userProfile.activeProfileId,
+        profileId: profileIdToSave,
         title,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         lastMessageTimestamp: admin.firestore.FieldValue.serverTimestamp(),

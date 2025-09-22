@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FaFire, FaCarrot, FaDrumstickBite, FaTint, FaBack } from 'react-icons/fa';
+import { FaFire, FaCarrot, FaDrumstickBite, FaTint } from 'react-icons/fa'; // Pastikan FaDrumstickBite sudah benar
 import Link from 'next/link';
 import { useChat } from '../context/ChatContext';
 
@@ -60,7 +60,11 @@ const ScanResultCard = ({ result }) => {
               <video className="object-contain w-52 h-52" autoPlay loop muted playsInline>
                 <source src="/images/Cheerful_Broccoli_Animation_Generated.mp4" type="video/mp4" />
               </video>
-              <button className='bg-teal-500 text-white px-5 py-3 hover:bg-emerald-400 transform transition-colors text-xs font-semibold w-full rounded-full' onClick={() => openChatWithContext({ type: 'scan_result', data: result })}>
+              <button 
+                type="button" 
+                className='bg-teal-500 text-white px-5 py-3 hover:bg-emerald-400 transform transition-colors text-xs font-semibold w-full rounded-full' 
+                onClick={() => openChatWithContext({ type: 'scan_result', data: result })}
+              >
                 Tanya Brocco
               </button>
             </div>

@@ -2,12 +2,33 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useChat } from '../context/ChatContext';
-import { FaPaperPlane, FaTimes } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { FaPaperPlane, FaTimes, FaUserCircle } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+
+// Komponen untuk animasi loading
+const ThinkingAnimation = () => (
+    <div className="flex items-end gap-2 justify-start animate-fade-in">
+      <Image 
+        src="/images/brocco-mascot.png" 
+        width={40} 
+        height={40} 
+        alt="Brocco" 
+        className="w-10 h-10 rounded-full mb-1 flex-shrink-0" 
+      />
+      <div className="relative max-w-[80%] p-3 rounded-xl bg-white shadow-sm text-gray-800">
+        <div className="flex items-center gap-2">
+            <div className="w-5 h-5 border-2 border-teal-200 border-t-teal-500 rounded-full animate-spin"></div>
+            <p className="text-sm font-semibold">Brocco sedang berpikir...</p>
+        </div>
+      </div>
+    </div>
+);
+
 
 const ChatModal = () => {
-  const {userProfile} = useAuth();
+  const { userProfile } = useAuth();
   const { isOpen, closeChat, messages, setMessages, context, chatId, setChatId } = useChat();
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,12 +44,17 @@ const ChatModal = () => {
     }
   }, [messages, isOpen]);
 
-  const handleSend = async () => {
+  // PERBAIKAN: Menggunakan satu fungsi submit untuk <form>
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Mencegah halaman refresh
     if (!input.trim() || isLoading) return;
 
-    const userMessage = { sender: 'user', text: input };
-    setMessages(prev => [...prev, userMessage]);
     const currentInput = input;
+    const currentHistory = messages;
+    const userMessage = { sender: 'user', text: currentInput };
+
+    // Optimistic UI update
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
@@ -41,9 +67,10 @@ const ChatModal = () => {
           context: context,
           chatId: chatId,
           userProfile: userProfile,
-          history: [...messages, userMessage], 
+          history: currentHistory, // Kirim riwayat sebelum pesan baru ditambahkan
         }),
       });
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Gagal mendapatkan balasan.");
 
@@ -87,7 +114,7 @@ const ChatModal = () => {
             {/* Area Pesan */}
             <div className="flex-1 p-4 space-y-4 overflow-y-auto">
               {messages.map((msg, index) => (
-                <div key={index} className={`flex gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div key={index} className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {msg.sender !== 'user' && (
                     <video className="w-14 h-14 rounded-full object-cover" autoPlay loop muted playsInline>
                       <source 
@@ -95,32 +122,37 @@ const ChatModal = () => {
                       </source>
                     </video>
                   )}
-                  <p className={`max-w-[80%] text-[16px] font-medium p-3 rounded-xl ${msg.sender === 'user' ? 'bg-teal-500 text-white' : 'bg-white shadow-sm text-gray-800'}`}>
+                  <p className={`max-w-[80%] text-base font-medium p-3 rounded-xl ${msg.sender === 'user' ? 'bg-teal-500 text-white' : 'bg-white shadow-sm text-gray-800'}`}>
                     {msg.text}
                   </p>
+                  {msg.sender === 'user' && (
+                    userProfile?.photoURL ? (
+                      <Image src={userProfile.photoURL} width={40} height={40} alt="Avatar Anda" className="w-10 h-10 rounded-full object-cover mb-1"/>
+                    ) : (
+                      <FaUserCircle size={40} className="text-gray-300 mb-1"/>
+                    )
+                  )}
                 </div>
               ))}
-              {isLoading && 
-                <div className="flex items-end gap-2 justify-start animate-fade-in">
-                  <video className="w-14 h-14 rounded-full object-cover" autoPlay loop muted playsInline>
-                    <source 
-                      src="/images/brokoli-think.mp4" type="video/mp4">
-                    </source>
-                  </video>
-                  <div className="relative max-w-[80%] p-3 rounded-xl bg-white shadow-sm text-gray-800">
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-teal-200 border-t-teal-500 rounded-full animate-spin"></div>
-                        <p className="text-sm font-semibold">Brocco sedang berpikir...</p>
-                      </div>
-                    </div>
-                  </div>
-                }
+              {isLoading && <ThinkingAnimation />}
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleSend} className="relative mb-24 md:mb-0 p-2 rounded-full">
-              <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ceritakan keluhan atau tanyakan apa saja..." className="w-full py-4 pl-6 pr-16 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-400 transition" />
-              <button type='submit' disabled={isLoading} className="absolute right-3 top-1/2 -translate-y-1/2 bg-teal-500 text-white p-3 rounded-full disabled:bg-gray-400 hover:bg-teal-600 transition">
+            {/* Input Chat */}
+            <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2 flex-shrink-0">
+              <input 
+                type="text" 
+                value={input} 
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ketik pertanyaanmu..." 
+                className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                disabled={isLoading}
+              />
+              <button 
+                type="submit" 
+                disabled={isLoading} 
+                className="bg-teal-500 text-white p-3 rounded-lg disabled:bg-gray-400 hover:bg-teal-600 transition"
+              >
                 <FaPaperPlane />
               </button>
             </form>

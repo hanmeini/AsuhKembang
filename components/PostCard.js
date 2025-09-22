@@ -110,8 +110,8 @@ const PostCard = ({ post }) => {
                 <FaRegComment size={20} />
                 <span className="text-xs font-semibold">{post.commentCount || 0}</span>
               </button>
-              <button className="hover:text-green-500 transition-colors"><BiRepost size={24} /></button>
-              <button className="hover:text-gray-800 transition-colors"><IoPaperPlaneOutline size={22} /></button>
+              {/* <button className="hover:text-green-500 transition-colors"><BiRepost size={24} /></button>
+              <button className="hover:text-gray-800 transition-colors"><IoPaperPlaneOutline size={22} /></button> */}
             </div>
             
             <AnimatePresence>

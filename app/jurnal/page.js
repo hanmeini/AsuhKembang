@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { subscribeToJournals, updateUserActiveTrimester } from '../../lib/firestore';
 import JournalingAnimation from '../../components/jurnalAnimation';
 import FloatingChatButton from '../../components/FloatingChatButton';
+import WeeklyNutritionSummary from '../../components/NutritionWeekly';
 
 const WeekBox = ({ week, isComplete, isCurrent, onClick }) => (
     <motion.button 
@@ -76,7 +77,6 @@ const JournalDetailView = ({ entry, onBack, userProfile, activeProfile }) => {
         );
     }
     
-    // Cek status verifikasi dari data entri atau dari state sementara
     const isVerified = entry.isVerified || verificationSuccess;
 
     return (
@@ -174,6 +174,7 @@ const JournalDetailView = ({ entry, onBack, userProfile, activeProfile }) => {
                         </div>
                     </div>
                  )}
+                <WeeklyNutritionSummary week={entry.week} />
             </div>
         </div>
     );
@@ -337,7 +338,7 @@ const NewJournalForm = ({ week, onSave, onBack }) => {
     );
 };
 
-const JournalLobby = () => {
+const JournalLobby = ({currentWeek, entry}) => {
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -359,26 +360,33 @@ const JournalLobby = () => {
     };
     return (
         <div className='space-y-8'>
-                    <div className="relative bg-pink-600 bg-gradient-to-r text-white rounded-2xl shadow-lg flex justify-between items-center overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
-                    <div className="p-6 md:p-8 flex-1 z-10">
-                        <h3 className="text-md md:text-2xl font-bold">Jurnal Kehamilan</h3>
-                        <p className="text-sm md:text-base mt-2 opacity-90 max-w-xs">
-                        Peduli dengan si kecil melalui jurnal kehamilan yang cerdas dan personal.
-                        </p>
-                    </div>
-                    <div className="relative w-40 h-full flex-shrink-0">
-                        <div className="absolute -bottom-26 -right-4 w-48 h-48">
-                        <Image 
-                            src='/images/hamil-transparan1.png'
-                            alt="Ibu Hamil" 
-                            width={200} 
-                            height={200}
-                            className='w-full h-full object-contain'
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-r from-pink-600/65 via-pink-500/50 to-pink-500/20"></div>
+                    <motion.section                         
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.5 }}
+                        className="relative bg-pink-600 bg-gradient-to-r text-white rounded-2xl shadow-lg flex justify-between items-center overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
+                        <motion.div variants={itemVariants} className="flex flex-col text-left p-4">
+                            <motion.h2 variants={textVariants} className="text-md md:text-xl font-bold text-white leading-tight">
+                                Jurnal kehamilan
+                            </motion.h2>
+                            <motion.p variants={textVariants} transition={{ delay: 0.2 }} className="mt-4 md:text-base text-xs max-w-lg mx-auto md:mx-0">
+                                Setiap tendangan, setiap momen. Catat dan pahami kehamilan dengan Healthier untuk masa depan sang buah hati.
+                            </motion.p>
+                        </motion.div>
+                        <div className="relative w-40 h-full flex-shrink-0">
+                            <div className="absolute -bottom-26 -right-4 w-48 h-48">
+                                <Image 
+                                    src='/images/hamil-transparan1.png'
+                                    alt="Ibu Hamil" 
+                                    width={200} 
+                                    height={200}
+                                    className='w-full h-full object-contain'
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-r from-pink-600/65 via-pink-500/50 to-pink-500/20"></div>
+                            </div>
                         </div>
-                    </div>
-                    </div>
+                    </motion.section>
 
                     <motion.section 
                         className="container mx-auto p-6"
@@ -434,13 +442,7 @@ const JournalLobby = () => {
                                 <p className="text-sm text-gray-500">Tanya Brocco tentang gizi & kehamilan.</p>
                             </div>
                         </Link>
-                        <Link href="/rekomendasi" className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                            <FaUtensils size={30} className="text-teal-500"/>
-                            <div>
-                                <h3 className="font-bold text-gray-800">Rekomendasi Makanan</h3>
-                                <p className="text-sm text-gray-500">Dapatkan ide menu sehat setiap hari.</p>
-                            </div>
-                        </Link>
+                        {currentWeek && <WeeklyNutritionSummary week={currentWeek} />}
                     </div>
         </div>
 

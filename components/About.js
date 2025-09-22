@@ -78,17 +78,6 @@ const FeaturesSection = () => {
 
   return (
     <section className="container mx-auto px-6 py-16 md:py-24 space-y-24">
-      <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-16">
-        {cardData.map((card) => (
-          <HoverCard
-            key={card.id}
-            imageUrl={card.imageUrl}
-            alt={card.alt}
-            title={card.title}
-            description={card.description}
-          />
-        ))}
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center pt-16">
         <div className="md:col-span-1 text-2xl md:text-3xl font-semibold leading-snug">
           <p>"Membangun hubungan adalah inti dari apa yang kami lakukan. Dalam suasana ceria dan penuh kasih sayang..."</p>
@@ -103,7 +92,18 @@ const FeaturesSection = () => {
             />
           ))}
         </div>
-      </div>
+        </div>
+              <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-16">
+          {cardData.map((card) => (
+            <HoverCard
+              key={card.id}
+              imageUrl={card.imageUrl}
+              alt={card.alt}
+              title={card.title}
+              description={card.description}
+            />
+          ))}
+        </div>
     </section>
   );
 };

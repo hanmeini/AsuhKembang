@@ -51,7 +51,6 @@ const createRecommendationPrompt = (profile, foodName, nutrition) => {
 };
 
 export async function POST(request) {
-  // Menerima 'activeProfile' dari frontend
   const { imageUrl, userId, activeProfile } = await request.json(); 
   const db = admin.firestore();
 
@@ -62,7 +61,6 @@ export async function POST(request) {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // LANGKAH 1: Analisis Gizi (tidak berubah)
     const visionModel = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash-latest',
       generationConfig: { responseMimeType: "application/json" },
@@ -84,10 +82,9 @@ export async function POST(request) {
     const visionResult = JSON.parse(visionResultRaw.response.text());
     const totalNutritionEstimateRaw = visionResult.total_estimasi_nutrisi;
 
-    // LANGKAH 2: Membuat Rekomendasi Cerdas berdasarkan Profil
+    // Membuat Rekomendasi berdasarkan Profil
     const textModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
     
-    // Memanggil fungsi baru untuk membuat prompt yang dinamis
     const recommendationPrompt = createRecommendationPrompt(
       activeProfile,
       visionResult.display_name,
@@ -97,17 +94,30 @@ export async function POST(request) {
     const recommendationResultRaw = await textModel.generateContent(recommendationPrompt);
     const recommendationText = recommendationResultRaw.response.text();
 
-    // LANGKAH 3: Membersihkan dan Menyimpan Data
+    //  Membersihkan dan Menyimpan Data
     const cleanNutritionData = {
         calories: cleanAndParseNumber(totalNutritionEstimateRaw.calories),
         protein: cleanAndParseNumber(totalNutritionEstimateRaw.protein),
         fat: cleanAndParseNumber(totalNutritionEstimateRaw.fat),
         carbohydrates: cleanAndParseNumber(totalNutritionEstimateRaw.carbohydrates),
     };
+
+    let pregnancyWeek = null;
+    if (activeProfile.type === 'pregnant' && activeProfile.dueDate) {
+        const dueDate = typeof activeProfile.dueDate.toDate === 'function' ? activeProfile.dueDate.toDate() : new Date(activeProfile.dueDate);
+        const today = new Date();
+        const diffTime = dueDate.getTime() - today.getTime();
+        const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const weekNumber = 40 - Math.floor(daysRemaining / 7);
+        if (weekNumber > 0 && weekNumber <= 42) {
+            pregnancyWeek = weekNumber;
+        }
+    }
     
     const finalResult = {
       userId: userId, 
-      profileId: activeProfile.profileId, // <-- MENYIMPAN ID PROFIL
+      profileId: activeProfile.profileId,
+      week: pregnancyWeek,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
       imageUrl: imageUrl,
       aiScanResult: {

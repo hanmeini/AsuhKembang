@@ -8,7 +8,7 @@ import ChatModal from '../components/ChatModal';
 
 const NavFooterManager = ({ children }) => {
   const pathname = usePathname();
-  const noNavFooterPaths = ['/login', '/register', '/dashboard', '/scan', '/tracker', '/profil', '/jurnal', '/komunitas', '/chat'];
+  const noNavFooterPaths = ['/login', '/register', '/dashboard', '/scan', '/tracker', '/profil', '/jurnal', '/komunitas', '/chat', '/lacak'];
   const shouldHideNavFooter = noNavFooterPaths.some(path => pathname.startsWith(path));
   const noBottomMarginPaths = ['/chat'];
   const shouldRemoveBottomMargin = noBottomMarginPaths.some(path => pathname.startsWith(path));

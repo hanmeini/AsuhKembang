@@ -13,7 +13,7 @@ const SidebarLink = ({ href, icon, text, expanded }) => (
     className="flex items-center space-x-4 text-gray-700 p-3 rounded-lg hover:bg-teal-50 transition-colors"
   >
     <div className="flex-shrink-0">{icon}</div>
-    <span className={`font-semibold whitespace-nowrap transition-opacity duration-200 ${expanded ? "opacity-100" : "opacity-0"}`}>
+    <span className={`font-medium whitespace-nowrap transition-opacity duration-200 ${expanded ? "opacity-100" : "opacity-0"}`}>
       {text}
     </span>
   </Link>
@@ -44,7 +44,7 @@ const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave }) => {
         <SidebarLink href="/dashboard" icon={<FaChartBar size={24} />} text="Dashboard" expanded={isExpanded} />
         <SidebarLink href="/scan" icon={<FaCamera size={24} />} text="Scan Makanan" expanded={isExpanded} />
         <SidebarLink href="/jurnal" icon={<FaBookMedical size={24} />} text="Jurnal" expanded={isExpanded} />
-        <SidebarLink href="/kalkulator" icon={<FaHeartbeat size={24} />} text="Cek Kesehatan" expanded={isExpanded} />
+        <SidebarLink href="/lacak" icon={<FaHeartbeat size={24} />} text="Lacak Pertumbuhan" expanded={isExpanded} />
         <SidebarLink href="/komunitas" icon={<FaUsers size={24} />} text="Komunitas" expanded={isExpanded} />
         <SidebarLink href="/chat" icon={<FaComments size={24} />} text="Chat Brocco" expanded={isExpanded} />
       </nav>
