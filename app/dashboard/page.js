@@ -29,7 +29,10 @@ const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const name = userProfile?.name;
   const [todaysScans, setTodaysScans] = useState([]);
-  const [totals, setTotals] = useState({ calories: 0, protein: 0, fat: 0, carbs: 0 });
+  const [totals, setTotals] = useState({ 
+    calories: 0, protein: 0, fat: 0, carbs: 0,
+    folic_acid: 0, iron: 0, sugar: 0, sodium: 0 
+  });
   const [healthTip, setHealthTip] = useState("Memuat tips kesehatan...");
   const [pregnancyUpdate, setPregnancyUpdate] = useState("Memuat informasi...");
   const [waterIntake, setWaterIntake] = useState(0);
@@ -202,10 +205,14 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
             acc.calories += scan.nutritionData?.calories || 0;
             acc.protein += scan.nutritionData?.protein || 0;
             acc.fat += scan.nutritionData?.fat || 0;
-            acc.carbs += scan.nutritionData?.carbs || 0;
+            acc.carbs += scan.nutritionData?.carbohydrates || 0;
+            acc.folic_acid += scan.nutritionData?.folic_acid || 0; 
+            acc.iron += scan.nutritionData?.iron || 0;           
+            acc.sugar += scan.nutritionData?.sugar || 0;        
+            acc.sodium += scan.nutritionData?.sodium || 0;        
             return acc;
           },
-          { calories: 0, protein: 0, fat: 0, carbs: 0 }
+          { calories: 0, protein: 0, fat: 0, carbs: 0, folic_acid: 0, iron: 0, sugar: 0, sodium: 0 }
         );
         setTotals(newTotals);
       }
@@ -413,6 +420,34 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
                   target={macroTargets.fat}
                   colorClass="bg-yellow-500"
                 />
+                <MacroWidget 
+                  label="Asam Folat"
+                  current={totals.folic_acid}
+                  target={400} 
+                  unit=" mcg"
+                  colorClass="bg-green-500"
+                />
+                <MacroWidget 
+                  label="Zat Besi"
+                  current={totals.iron}
+                  target={27} 
+                  unit=" mg"
+                  colorClass="bg-gray-700"
+                />
+                <MacroWidget 
+                  label="Gula"
+                  current={totals.sugar}
+                  target={50} 
+                  unit=" g"
+                  colorClass="bg-pink-500"
+                />
+                <MacroWidget 
+                  label="Natrium"
+                  current={totals.sodium}
+                  target={2000} 
+                  unit=" mg"
+                  colorClass="bg-blue-400"
+                />
               </div>
           
 
@@ -449,9 +484,9 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
                   <IoJournal size={24} />
                   <span className="text-xs mt-2 leading-tight">Jurnal Harian</span>
                 </Link>
-                <Link href='/kalkulator' className="flex flex-col items-center justify-center p-8 bg-orange-500 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
+                <Link href='/lacak' className="flex flex-col items-center justify-center p-8 bg-orange-500 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
                   <FaHeartbeat size={24} />
-                  <span className="text-xs mt-2 leading-tight">Cek Kesehatan</span>
+                  <span className="text-xs mt-2 leading-tight">Lacak Pertumbuhan</span>
                 </Link>
                 <Link href='/komunitas' className="flex flex-col items-center justify-center p-8 bg-orange-400 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
                   <FaUsers size={24} />
@@ -490,10 +525,59 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
             {/* 1. Ringkasan Gizi */}
             <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
               <h4 className="font-bold text-gray-700">Ringkasan Gizi Hari Ini</h4>
-              <MacroWidget label="Kalori" current={totals.calories} target={tdeeResult || 2000} unit=" kkal" colorClass="bg-red-500" />
-              <MacroWidget label="Karbohidrat" current={totals.carbs} target={macroTargets.carbs} colorClass="bg-orange-500" />
-              <MacroWidget label="Protein" current={totals.protein} target={macroTargets.protein} colorClass="bg-teal-500" />
-              <MacroWidget label="Lemak" current={totals.fat} target={macroTargets.fat} colorClass="bg-yellow-500" />
+                <MacroWidget 
+                  label="Kalori"
+                  current={totals.calories}
+                  target={tdeeResult || 2000} 
+                  unit=" kkal" 
+                  colorClass="bg-red-500"
+                />
+                <MacroWidget 
+                  label="Karbohidrat"
+                  current={totals.carbs}
+                  target={macroTargets.carbs}
+                  colorClass="bg-orange-500"
+                />
+                <MacroWidget 
+                  label="Protein"
+                  current={totals.protein}
+                  target={macroTargets.protein}
+                  colorClass="bg-teal-500"
+                />
+                <MacroWidget 
+                  label="Lemak"
+                  current={totals.fat}
+                  target={macroTargets.fat}
+                  colorClass="bg-yellow-500"
+                />
+                <MacroWidget 
+                  label="Asam Folat"
+                  current={totals.folic_acid}
+                  target={400} 
+                  unit=" mcg"
+                  colorClass="bg-green-500"
+                />
+                <MacroWidget 
+                  label="Zat Besi"
+                  current={totals.iron}
+                  target={27} 
+                  unit=" mg"
+                  colorClass="bg-gray-700"
+                />
+                <MacroWidget 
+                  label="Gula"
+                  current={totals.sugar}
+                  target={50} 
+                  unit=" g"
+                  colorClass="bg-pink-500"
+                />
+                <MacroWidget 
+                  label="Natrium"
+                  current={totals.sodium}
+                  target={2000} 
+                  unit=" mg"
+                  colorClass="bg-blue-400"
+                />
             </div>
 
             {/* 3. Widget Interaktif */}

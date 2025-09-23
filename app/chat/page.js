@@ -25,7 +25,7 @@ const Sidebar = ({
     <>
       <button 
         onClick={onToggleExpand}
-        className="fixed top-4 right-4 z-50 p-2 bg-white rounded-full shadow-lg md:hidden"
+        className="fixed top-4 right-4 z-100 p-2 bg-white rounded-full shadow-lg md:hidden"
       >
         {isExpanded ? <X size={20} /> : <Menu size={20} />}
       </button>

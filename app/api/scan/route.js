@@ -19,36 +19,40 @@ const cleanAndParseNumber = (value) => {
   return 0;
 };
 
-// Fungsi BARU untuk membuat prompt rekomendasi yang dinamis
+// ================== PROMPT REKOMENDASI YANG LEBIH CERDAS ==================
 const createRecommendationPrompt = (profile, foodName, nutrition) => {
   let context = "seseorang yang peduli kesehatan";
   let specificNeeds = "";
 
-  // Menyesuaikan konteks dan kebutuhan berdasarkan tipe profil
   if (profile.type === 'pregnant') {
     context = `seorang ibu hamil`;
-    specificNeeds = "Fokus pada nutrisi penting untuk kehamilan seperti Asam Folat, Zat Besi, dan Kalsium. Beri peringatan jika ada bahan yang berisiko (contoh: keju yang tidak dipasteurisasi).";
+    specificNeeds = `
+      Secara spesifik, analisis makanan ini dari sudut pandang kehamilan.
+      - Apakah kandungan Asam Folat (${nutrition.folic_acid} mcg) cukup baik untuk perkembangan janin?
+      - Apakah kandungan Zat Besi (${nutrition.iron} mg) membantu mencegah anemia?
+      - Apakah kandungan Natrium (${nutrition.sodium} mg) perlu diwaspadai untuk menjaga tekanan darah?
+    `;
   } else if (profile.type === 'child') {
-    const age = new Date().getFullYear() - new Date(profile.birthDate).getFullYear();
+    const age = profile.birthDate ? new Date().getFullYear() - new Date(profile.birthDate).getFullYear() : 'anak';
     context = `seorang anak berusia ${age} tahun`;
-    specificNeeds = `Fokus pada nutrisi untuk tumbuh kembang seperti Kalsium dan Protein. Jika makanan ini mengandung alergen umum seperti kacang atau susu, berikan peringatan.`;
-  } else if (profile.type === 'general') { 
+    specificNeeds = `
+      Analisis makanan ini untuk tumbuh kembang anak.
+      - Apakah kandungan Protein (${nutrition.protein} g) dan Zat Besi (${nutrition.iron} mg) baik untuk pertumbuhannya?
+      - Apakah kandungan Gula (${nutrition.sugar} g) dan Garam/Natrium (${nutrition.sodium} mg) sesuai untuk anak-anak?
+      - Jika makanan ini mengandung alergen yang umum seperti kacang, berikan peringatan.
+    `;
+  } else if (profile.type === 'general') {
     context = `seorang dewasa`;
-    specificNeeds = `Fokus pada keseimbangan gizi secara umum. Berikan tips praktis terkait porsi atau cara memasak yang lebih sehat.`;
+    specificNeeds = `Fokus pada keseimbangan gizi secara umum, terutama kandungan gula dan natrium. Berikan tips praktis.`;
   }
 
   return `
-    Anda adalah "Brocco", ahli gizi AI yang ramah. Berdasarkan estimasi nutrisi untuk makanan bernama "${foodName}" berikut:
-    - Kalori: ${nutrition.calories} kcal
-    - Protein: ${nutrition.protein} g
-    - Lemak: ${nutrition.fat} g
-    - Karbohidrat: ${nutrition.carbohydrates} g
-    
-    Berikan analisis dan rekomendasi singkat (maksimal 3 kalimat) untuk ${context}.
+    Anda adalah "Brocco", ahli gizi AI. Berdasarkan data untuk makanan "${foodName}", berikan rekomendasi singkat (maksimal 3 kalimat) untuk ${context}.
     ${specificNeeds}
-    Gunakan bahasa yang mudah dimengerti.
+    Jawab dengan ramah dan mudah dimengerti.
   `;
 };
+
 
 export async function POST(request) {
   const { imageUrl, userId, activeProfile } = await request.json(); 
@@ -67,14 +71,23 @@ export async function POST(request) {
     });
 
     const visionAndNutritionPrompt = `
-      Analisis gambar makanan ini...
+      Analisis gambar makanan ini secara mendalam sebagai seorang ahli gizi.
       Struktur JSON harus seperti ini:
       {
-        "display_name": "Nama lengkap...",
+        "display_name": "Nama lengkap dan deskriptif dalam Bahasa Indonesia.",
         "bahan_terdeteksi": [{"nama_bahan": "..."}],
-        "total_estimasi_nutrisi": { "calories": 500, "protein": 25, "fat": 15, "carbohydrates": 40 }
+        "total_estimasi_nutrisi": {
+          "calories": 500,
+          "protein": 25,
+          "fat": 15,
+          "carbohydrates": 40,
+          "sugar": 10,
+          "sodium": 500,
+          "iron": 4,
+          "folic_acid": 80
+        }
       }
-      PENTING: Semua nilai di 'total_estimasi_nutrisi' HARUS berupa ANGKA INTEGER.
+      PENTING: Semua nilai di dalam 'total_estimasi_nutrisi' HARUS berupa ANGKA INTEGER saja. 'sodium' dalam mg, 'iron' dalam mg, 'folic_acid' dalam mcg.
     `;
 
     const imagePart = await urlToGenerativePart(imageUrl, 'image/jpeg');
@@ -84,22 +97,20 @@ export async function POST(request) {
 
     // Membuat Rekomendasi berdasarkan Profil
     const textModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
-    
-    const recommendationPrompt = createRecommendationPrompt(
-      activeProfile,
-      visionResult.display_name,
-      totalNutritionEstimateRaw
-    );
-
+    const recommendationPrompt = createRecommendationPrompt(activeProfile, visionResult.display_name, totalNutritionEstimateRaw);
     const recommendationResultRaw = await textModel.generateContent(recommendationPrompt);
     const recommendationText = recommendationResultRaw.response.text();
 
-    //  Membersihkan dan Menyimpan Data
+    // Membersihkan dan Menyimpan Data
     const cleanNutritionData = {
         calories: cleanAndParseNumber(totalNutritionEstimateRaw.calories),
         protein: cleanAndParseNumber(totalNutritionEstimateRaw.protein),
         fat: cleanAndParseNumber(totalNutritionEstimateRaw.fat),
         carbohydrates: cleanAndParseNumber(totalNutritionEstimateRaw.carbohydrates),
+        sugar: cleanAndParseNumber(totalNutritionEstimateRaw.sugar),
+        sodium: cleanAndParseNumber(totalNutritionEstimateRaw.sodium),
+        iron: cleanAndParseNumber(totalNutritionEstimateRaw.iron),
+        folic_acid: cleanAndParseNumber(totalNutritionEstimateRaw.folic_acid),
     };
 
     let pregnancyWeek = null;
@@ -115,11 +126,11 @@ export async function POST(request) {
     }
     
     const finalResult = {
-      userId: userId, 
+      userId, 
       profileId: activeProfile.profileId,
       week: pregnancyWeek,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      imageUrl: imageUrl,
+      imageUrl,
       aiScanResult: {
           display_name: visionResult.display_name,
           bahan_terdeteksi: visionResult.bahan_terdeteksi || [],
@@ -130,7 +141,8 @@ export async function POST(request) {
     
     const docRef = await db.collection('scans').add(finalResult);
     
-    return NextResponse.json({ ...finalResult, id: docRef.id });
+    const resultForFrontend = { ...finalResult, id: docRef.id, timestamp: new Date().toISOString() };
+    return NextResponse.json(resultForFrontend);
 
   } catch (error) {
     console.error('Error in API route:', error);
