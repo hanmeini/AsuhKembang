@@ -12,6 +12,8 @@ import { subscribeToTodaysScans } from '../../lib/firestore';
 import ProfileSelector from '../../components/profileSelector';
 import Image from 'next/image';
 import BottomNavBar from '../../components/BottomNav';
+import { motion } from 'framer-motion';
+import imageCompression from 'browser-image-compression';
 
 // Komponen kecil baru untuk menampilkan item di riwayat
 const HistoryItem = ({ scan, onClick, isActive }) => (
@@ -88,12 +90,29 @@ export default function ScanPage() {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (!file) return;
+
+    console.log(`Ukuran asli: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+
+    const options = {
+      maxSizeMB: 1,         
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      console.log(`Ukuran setelah kompresi: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+      
+      setImageFile(compressedFile);
+      setPreviewUrl(URL.createObjectURL(compressedFile));
+    } catch (error) {
+      console.error("Error saat kompresi gambar:", error);
+      setError("Gagal memproses gambar. Coba lagi.");
       setImageFile(file);
       setPreviewUrl(URL.createObjectURL(file));
-      if (isCameraOpen) toggleCamera();
     }
   };
 
@@ -239,19 +258,34 @@ const currentResult = result || selectedHistoryScan;
                       </div>
                       }
                     </div>
-                    <div className="flex w-full flex-row gap-4 justify-center mb-6">
-                      <label className="cursor-pointer px-6 py-3 w-full bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 text-center flex items-center justify-center gap-2">
-                        <FaFileUpload /> Pilih File
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+                      <motion.label 
+                        className="cursor-pointer px-6 py-3 w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:border-teal-500 hover:text-teal-600 text-center flex items-center justify-center gap-2 transition-all duration-200"
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FaFileUpload /> Pilih dari Galeri
                         <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                      </label>
-                      <button onClick={toggleCamera} className="px-6 py-3 bg-gray-700 w-full text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 flex items-center justify-center gap-2">
-                        <FaCamera /> {isCameraOpen ? 'Tutup Kamera' : 'Buka Kamera'}
-                      </button>
-                      {isCameraOpen && (<button onClick={handleCapture} className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700">Ambil Gambar</button>)}
+                      </motion.label>
+                      <motion.label 
+                        className="cursor-pointer px-6 py-3 w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg shadow-sm hover:border-pink-500 hover:text-pink-600 text-center flex items-center justify-center gap-2 transition-all duration-200"
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FaCamera /> Gunakan Kamera
+                        <input type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+                      </motion.label>
                     </div>
-                    <button onClick={handleSubmit} disabled={!imageFile} className="w-full px-6 py-4 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 text-lg">
+                    
+                    <motion.button 
+                      onClick={handleSubmit} 
+                      disabled={!imageFile} 
+                      className="w-full px-6 py-4 bg-teal-600 text-white font-bold rounded-lg shadow-lg hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-lg transition-all duration-300"
+                      whileHover={imageFile ? { scale: 1.02, y: -2 } : {}}
+                      whileTap={imageFile ? { scale: 0.98 } : {}}
+                    >
                       Analisis Makanan Ini
-                    </button>
+                    </motion.button>
                   </div>
                   {error && <p className="mt-4 text-red-500 text-center bg-red-100 p-4 rounded-lg">Error: {error}</p>}
                 </div>

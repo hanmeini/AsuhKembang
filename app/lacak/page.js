@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 const AISummaryCard = ({ summary, isLoading }) => (
     <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-teal-500">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Kesimpulan dari Brocco</h2>
-        <div className="flex flex-row items-center justify-center gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4">
           <video
                 className="object-contain w-44 h-44 rounded-2xl
                            transition-transform duration-500 ease-in-out
@@ -45,7 +45,7 @@ const AISummaryCard = ({ summary, isLoading }) => (
 const HistoryTable = ({ entries }) => (
     <div className="bg-white p-6 rounded-2xl shadow-lg">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Riwayat Pengukuran</h2>
-        <div className="max-h-60 overflow-y-auto">
+        <div className="h-full">
             <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 text-gray-600 uppercase">
                     <tr>
