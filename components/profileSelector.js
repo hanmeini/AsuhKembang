@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { FaBaby, FaFemale } from 'react-icons/fa'; 
+import { MdPregnantWoman } from "react-icons/md";
 import { ImManWoman } from "react-icons/im";
 
 const ProfileSelector = ({ profiles, activeProfile, onProfileChange }) => {
@@ -22,7 +23,7 @@ const ProfileSelector = ({ profiles, activeProfile, onProfileChange }) => {
             }
           >
             {profile.type === 'pregnant' ? (
-              <FaFemale />
+              <MdPregnantWoman size={20}/>
             ) : profile.type === 'child' ? (
               <FaBaby />
             ) : (

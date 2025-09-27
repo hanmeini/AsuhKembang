@@ -1,5 +1,5 @@
 'use client';
-
+import { AnimatePresence } from 'framer-motion';
 import React from 'react';
 import { 
   FaRegBell, FaCalendarAlt, FaPlus, FaMinus, FaHeartbeat, FaUsers
@@ -21,6 +21,7 @@ import Image from 'next/image';
 import ProfileSelector from '../../components/profileSelector';
 import PregnancyInfo from '../../components/tespregnant';
 import FloatingChatButton from '../../components/FloatingChatButton';
+import NutritionChart from '../../components/NutritionChart';
 
 
 const DashboardPage = () => {
@@ -57,12 +58,15 @@ useEffect(() => {
   if (userProfile?.uid && activeProfile) {
     // --- Bagian Kalkulasi Profil ---
     let profileDataForCalc = userProfile.healthProfile;
-    if (activeProfile.type === "child") {
-      console.warn(
-        "Profil anak aktif, kalkulasi TDEE masih menggunakan data profil utama."
-      );
-      profileDataForCalc = userProfile.healthProfile;
-    }
+      if (activeProfile.type === 'child' && activeProfile.healthData) {
+        profileDataForCalc = {
+          ...activeProfile.healthData,
+          birthDate: activeProfile.birthDate,
+          activityLevel: 'Aktif'
+        };
+      } else {
+        profileDataForCalc = userProfile.healthProfile;
+      }
 
     // Hitung minggu kehamilan
     let calculatedWeek = null;
@@ -99,18 +103,9 @@ useEffect(() => {
         new Date().getFullYear() -
         new Date(birthDate).getFullYear();
 
-      const bmr =
-        gender === "Pria"
-          ? 10 * numWeight + 6.25 * Number(height) - 5 * age + 5
-          : 10 * numWeight + 6.25 * Number(height) - 5 * age - 161;
-
-      const activityMultipliers = {
-        Jarang: 1.2,
-        Ringan: 1.375,
-        Aktif: 1.55,
-        "Sangat Aktif": 1.725,
-      };
-      let tdee = Math.round(bmr * (activityMultipliers[activityLevel] || 1.2));
+        const bmr = (gender === 'Pria') ? (10 * numWeight) + (6.25 * Number(height)) - (5 * age) + 5 : (10 * numWeight) + (6.25 * Number(height)) - (5 * age) - 161;
+        const activityMultipliers = { 'Jarang': 1.2, 'Ringan': 1.375, 'Aktif': 1.55, 'Sangat Aktif': 1.725 };
+        let tdee = Math.round(bmr * (activityMultipliers[activityLevel] || 1.2));
 
       setBmiResult(bmi);
 
@@ -200,20 +195,18 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
       activeProfile.profileId,
       (scans) => {
         setTodaysScans(scans);
-        const newTotals = scans.reduce(
-          (acc, scan) => {
-            acc.calories += scan.nutritionData?.calories || 0;
-            acc.protein += scan.nutritionData?.protein || 0;
-            acc.fat += scan.nutritionData?.fat || 0;
-            acc.carbs += scan.nutritionData?.carbohydrates || 0;
-            acc.folic_acid += scan.nutritionData?.folic_acid || 0; 
-            acc.iron += scan.nutritionData?.iron || 0;           
-            acc.sugar += scan.nutritionData?.sugar || 0;        
-            acc.sodium += scan.nutritionData?.sodium || 0;        
-            return acc;
-          },
-          { calories: 0, protein: 0, fat: 0, carbs: 0, folic_acid: 0, iron: 0, sugar: 0, sodium: 0 }
-        );
+        const newTotals = scans.reduce((acc, scan) => {
+          const nutrition = scan.nutritionData || {};
+          acc.calories += nutrition.calories || 0;
+          acc.protein += nutrition.protein || 0;
+          acc.fat += nutrition.fat || 0;
+          acc.carbs += nutrition.carbohydrates || 0;
+          acc.folic_acid += nutrition.folic_acid || 0;
+          acc.iron += nutrition.iron || 0;
+          acc.sugar += nutrition.sugar || 0;
+          acc.sodium += nutrition.sodium || 0;
+          return acc;
+        }, { calories: 0, protein: 0, fat: 0, carbs: 0, folic_acid: 0, iron: 0, sugar: 0, sodium: 0 });
         setTotals(newTotals);
       }
     );
@@ -245,6 +238,12 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
   const handleWaterChange = (change) => {
     const newAmount = Math.max(0, waterIntake + change); 
     updateTodaysWater(userProfile.uid, newAmount);
+  };
+
+
+  const targetsForWidget = {
+    calories: tdeeResult || 2000,
+    ...macroTargets
   };
 
 
@@ -287,6 +286,8 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
                 Mulai Pindai
               </Link>
             </div>
+
+            <NutritionChart totals={totals} targets={targetsForWidget} />
 
               {/* Aktivitas Terakhir */}
               <div className='p-2 md:p-0'>
@@ -395,59 +396,7 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
             {/* Widget Nutrisi */}
               <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
                 <h4 className="font-bold text-gray-700">Ringkasan Gizi Hari Ini</h4>
-                <MacroWidget 
-                  label="Kalori"
-                  current={totals.calories}
-                  target={tdeeResult || 2000} 
-                  unit=" kkal" 
-                  colorClass="bg-red-500"
-                />
-                <MacroWidget 
-                  label="Karbohidrat"
-                  current={totals.carbs}
-                  target={macroTargets.carbs}
-                  colorClass="bg-orange-500"
-                />
-                <MacroWidget 
-                  label="Protein"
-                  current={totals.protein}
-                  target={macroTargets.protein}
-                  colorClass="bg-teal-500"
-                />
-                <MacroWidget 
-                  label="Lemak"
-                  current={totals.fat}
-                  target={macroTargets.fat}
-                  colorClass="bg-yellow-500"
-                />
-                <MacroWidget 
-                  label="Asam Folat"
-                  current={totals.folic_acid}
-                  target={400} 
-                  unit=" mcg"
-                  colorClass="bg-green-500"
-                />
-                <MacroWidget 
-                  label="Zat Besi"
-                  current={totals.iron}
-                  target={27} 
-                  unit=" mg"
-                  colorClass="bg-gray-700"
-                />
-                <MacroWidget 
-                  label="Gula"
-                  current={totals.sugar}
-                  target={50} 
-                  unit=" g"
-                  colorClass="bg-pink-500"
-                />
-                <MacroWidget 
-                  label="Natrium"
-                  current={totals.sodium}
-                  target={2000} 
-                  unit=" mg"
-                  colorClass="bg-blue-400"
-                />
+                <MacroWidget totals={totals} targets={targetsForWidget} />
               </div>
           
 

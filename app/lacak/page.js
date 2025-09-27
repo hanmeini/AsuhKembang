@@ -195,10 +195,10 @@ export default function GrowthTrackerPage() {
                         </div>
                         
                         <div className="relative z-10">
-                            <h2 className="font-extrabold text-4xl leading-tight">
+                            <h2 className="font-extrabold text-lg md:text-4xl leading-tight">
                                 Awasi Setiap <span className="text-teal-700">Keajaiban</span> Pertumbuhan Si Kecil
                             </h2>
-                            <p className="mt-2 max-w-lg font-medium">
+                            <p className="mt-2 max-w-lg md:text-base text-sm font-medium">
                                 Dari senyum pertama hingga langkah pertamanya, setiap milimeter dan gram adalah sebuah pencapaian. Fitur ini mengubah data sederhana menjadi wawasan yang kuat.
                             </p>
                         </div>
@@ -240,7 +240,7 @@ export default function GrowthTrackerPage() {
                     
                     {/* Form Input Data Baru */}
                     <div className='flex flex-col lg:flex-row justify-between gap-6 w-full'>
-                      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-lg w-full lg:max-w-2xl">
+                      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:shadow-lg w-full lg:max-w-2xl">
                           <h2 className="text-xl font-bold text-gray-700">Tambah Catatan Baru</h2>
                           <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -275,7 +275,7 @@ export default function GrowthTrackerPage() {
                     </div>
 
                     {/* Tampilan Grafik */}
-                    <div className="bg-white p-6 rounded-2xl shadow-lg">
+                    <div className="bg-white p-6 rounded-2xl md:shadow-lg">
                         <GrowthChart childData={growthEntries} childBirthDate={activeProfile.birthDate}/>
                     </div>
 
