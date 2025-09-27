@@ -24,7 +24,7 @@ const HeroSection = () => {
       <section
         id="home"
         style={{ backgroundImage: `url('/images/bg-grid.png')` }}
-        className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat min-h-screen pt-32 pb-16 px-6"
+        className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat min-h-screen pt-32 px-6"
       >
         <div className="flex flex-col p-6 md:p-10 justify-center items-center relative text-center">
           <div className="absolute top-[65%] md:top-1/10 -left-2 md:left-auto md:right-8 lg:-right-20 pointer-events-none">

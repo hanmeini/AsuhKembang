@@ -58,7 +58,7 @@ const ProfileModal = ({ onSave, onClose, initialData }) => {
           </div>
           <div>
             <label className="font-semibold text-sm text-gray-600">Nama Profil</label>
-            <input type="text" placeholder="Contoh: Kehamilan Pertama / Budi" value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 p-2 border rounded-lg" />
+            <input type="text" placeholder="Contoh: Budi" value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 p-2 border rounded-lg" />
           </div>
 
           {type === 'pregnant' && (

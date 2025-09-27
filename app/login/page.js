@@ -88,8 +88,8 @@ const Login = () => {
                 />
                 <div className="absolute inset-0 bg-teal-500/30 flex flex-col justify-end p-12 text-white">
                     <div className="mb-10">
-                        <h1 className="text-4xl font-bold">Temukan Tempat, Temukan Cerita</h1>
-                        <p className="text-xl mt-2">Jelajahi destinasi yang sesuai dengan suasana hatimu.</p>
+                        <h1 className="text-4xl font-bold">Ibu Sehat, Anak Tumbuh Hebat</h1>
+                        <p className="text-xl mt-2">Peduli dengan kesehatan untuk masa depan.</p>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@ const Login = () => {
 
                 <div className="relative z-10 w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl lg:shadow-none lg:rounded-none lg:flex lg:flex-col lg:justify-center">
                     <div className="w-full">
-                        <h2 className="text-3xl font-semibold text-gray-800 text-center">Masuk ke Selaras</h2>
+                        <h2 className="text-3xl font-semibold text-gray-800 text-center">Masuk ke Asuh Kembang</h2>
                         <p className="text-gray-500 mt-1 mb-6 text-center">Akses rekomendasi personal hanya untukmu.</p>
                         
                         {error && <p className="bg-red-100 text-red-700 text-center p-3 rounded-lg mb-4 text-sm">{error}</p>}

@@ -9,6 +9,7 @@ import { FaPaperPlane, FaPlus, FaComments, FaBook, FaCode, FaCog, FaShare2 } fro
 import Image from 'next/image';
 import { Video, Mic, Equal } from 'lucide-react';
 import Link from 'next/link';
+import TextareaAutosize from 'react-textarea-autosize';
 import { LayoutDashboard, MessageSquarePlus, MessageSquare, Menu, X } from 'lucide-react';
 
 const Sidebar = ({ 
@@ -31,7 +32,7 @@ const Sidebar = ({
       </button>
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full bg-gray-50 text-gray-800 flex flex-col z-40
+      <aside className={`fixed top-0 left-0 h-screen bg-gray-50 text-gray-800 flex flex-col z-40
         transition-transform duration-300 ease-in-out
         ${isExpanded ? 'translate-x-0 w-72 p-4' : '-translate-x-full w-72 p-4'}
         md:relative md:translate-x-0 md:w-72 md:p-4
@@ -88,6 +89,21 @@ export default function ChatPage() {
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
     const userName = userProfile?.displayName || 'Pengguna';
+
+    // Fungsi baru untuk menangani penekanan tombol Enter
+
+    const handleInputSubmit = (e) => {
+        e.preventDefault();
+        handleSendMessage(input);
+        setInput('');
+    };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); 
+            handleInputSubmit(e);
+        }
+    };
+    
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -175,8 +191,8 @@ export default function ChatPage() {
                     onNewChat={handleNewChat}
                 />
                 
-                <main className="flex-1 flex flex-col transition-all duration-300 ease-in-out">
-                    <div className="flex-1 flex flex-col items-center justify-between p-2 md:p-2 w-full max-w-4xl mx-auto">
+                <main className="flex-1 flex flex-col transition-all overflow-y-auto duration-300 ease-in-out">
+                    <div className="flex-1 mb-24 flex flex-col items-center justify-between pb-10 p-2 md:p-2 w-full max-w-4xl mx-auto">
                         <div className="w-full flex-1 flex flex-col justify-center items-center overflow-hidden">
                             {hasMessages ? (
                                 <div className="space-y-4 overflow-y-auto pb-4">
@@ -227,7 +243,7 @@ export default function ChatPage() {
                             )}
                         </div>
                         
-                        <div className="w-full pt-4">
+                        <div className="w-full pt-4 relative">
                             {!hasMessages && (
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                     <button onClick={() => handleSendMessage('Apa saja makanan yang baik untuk ibu hamil?')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Apa saja makanan yang baik untuk ibu hamil?</p></button>
@@ -236,12 +252,21 @@ export default function ChatPage() {
                                 </div>
                             )}
 
-                            <div className="relative mb-24 md:mb-0 shadow-lg rounded-full">
-                                <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(input)} placeholder="Ceritakan keluhan atau tanyakan apa saja..." className="w-full py-4 pl-6 pr-16 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-400 transition" />
-                                <button onClick={() => handleSendMessage(input)} disabled={isLoading} className="absolute right-3 top-1/2 -translate-y-1/2 bg-teal-500 text-white p-3 rounded-full disabled:bg-gray-400 hover:bg-teal-600 transition">
+                       <div className="flex-shrink-0 fixed bottom-14 left-0 md:left-auto md:right-auto right-0 md:bottom-0 w-full md:w-[60%] my-4">
+                            <form onSubmit={handleSendMessage} className="relative">
+                                <TextareaAutosize
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={handleKeyPress} 
+                                    placeholder={activeChat ? "Ketik pesan..." : "Ceritakan keluhan atau tanyakan apa saja..."}
+                                    className="w-full py-5 pl-6 pr-16 bg-white backdrop-blur-sm border-gray-200 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 transition resize-none"
+                                    maxRows={5} 
+                                />
+                                <button type="submit" disabled={isLoading} className="absolute right-3 bottom-5 bg-teal-500 text-white p-3 rounded-full disabled:bg-gray-400 hover:bg-teal-600 transition">
                                     <FaPaperPlane />
                                 </button>
-                            </div>
+                            </form>
+                       </div>
                         </div>
                     </div>
                 </main>

@@ -65,10 +65,10 @@ const Register = () => {
             {/* Kolom Kiri: GAMBAR (Hanya Desktop) */}
             <div className="hidden lg:block relative h-screen">
                 <img src='/images/loginbg.jpg' alt="background" className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-teal-500/30 flex-col justify-end p-12 text-white">
+                <div className="absolute inset-0 bg-teal-500/30 flex flex-col justify-end p-12 text-white">
                     <div className="mb-10">
-                        <h1 className="text-4xl font-bold">Gabung dan Mulai Berpetualang</h1>
-                        <p className="text-xl mt-2">Dapatkan rekomendasi wisata yang dibuat khusus untukmu.</p>
+                        <h1 className="text-4xl font-bold">Anak Sehat, Tumbuh Kuat</h1>
+                        <p className="text-xl mt-2">Jadikan kesehatan sebagai prioritas hidupmu.</p>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@ const Register = () => {
                 <div className="w-full max-w-sm z-10 bg-white p-8 rounded-2xl shadow-xl lg:shadow-none lg:rounded-none lg:h-screen lg:flex lg:flex-col lg:justify-center">
                     <div className="w-full">
                         <h2 className="text-3xl font-semibold text-gray-800 text-center">Gabung Bersama Kami</h2>
-                        <p className="text-gray-500 mt-1 mb-6 text-center">Mulai petualanganmu bersama Selaras</p>
+                        <p className="text-gray-500 mt-1 mb-6 text-center">Mulai petualanganmu bersama Asuh Kembang</p>
                         
                         {error && <p className="bg-red-100 text-red-700 text-center p-3 rounded-lg mb-4 text-sm">{error}</p>}
                         
