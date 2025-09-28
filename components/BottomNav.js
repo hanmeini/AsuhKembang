@@ -35,7 +35,7 @@ const BottomNavBar = () => {
             alt="Foto Profil"
             width={22}
             height={22}
-            className="rounded-full flex-shrink-0"
+            className="rounded-full object-cover w-6 h-6 flex-shrink-0"
           />
         ) : (
           <FaUserCircle size={22} className="text-gray-500 flex-shrink-0" />

@@ -394,10 +394,7 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
 
             
             {/* Widget Nutrisi */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-                <h4 className="font-bold text-gray-700">Ringkasan Gizi Hari Ini</h4>
-                <MacroWidget totals={totals} targets={targetsForWidget} />
-              </div>
+            <MacroWidget totals={totals} targets={targetsForWidget} />
           
 
             {/* Widget Minum Air */}
@@ -472,62 +469,7 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
               </div>
 
             {/* 1. Ringkasan Gizi */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-              <h4 className="font-bold text-gray-700">Ringkasan Gizi Hari Ini</h4>
-                <MacroWidget 
-                  label="Kalori"
-                  current={totals.calories}
-                  target={tdeeResult || 2000} 
-                  unit=" kkal" 
-                  colorClass="bg-red-500"
-                />
-                <MacroWidget 
-                  label="Karbohidrat"
-                  current={totals.carbs}
-                  target={macroTargets.carbs}
-                  colorClass="bg-orange-500"
-                />
-                <MacroWidget 
-                  label="Protein"
-                  current={totals.protein}
-                  target={macroTargets.protein}
-                  colorClass="bg-teal-500"
-                />
-                <MacroWidget 
-                  label="Lemak"
-                  current={totals.fat}
-                  target={macroTargets.fat}
-                  colorClass="bg-yellow-500"
-                />
-                <MacroWidget 
-                  label="Asam Folat"
-                  current={totals.folic_acid}
-                  target={400} 
-                  unit=" mcg"
-                  colorClass="bg-green-500"
-                />
-                <MacroWidget 
-                  label="Zat Besi"
-                  current={totals.iron}
-                  target={27} 
-                  unit=" mg"
-                  colorClass="bg-gray-700"
-                />
-                <MacroWidget 
-                  label="Gula"
-                  current={totals.sugar}
-                  target={50} 
-                  unit=" g"
-                  colorClass="bg-pink-500"
-                />
-                <MacroWidget 
-                  label="Natrium"
-                  current={totals.sodium}
-                  target={2000} 
-                  unit=" mg"
-                  colorClass="bg-blue-400"
-                />
-            </div>
+            <MacroWidget totals={totals} targets={targetsForWidget} />
 
             {/* 3. Widget Interaktif */}
             <div className="bg-white p-6 rounded-2xl shadow-sm">

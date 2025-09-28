@@ -15,6 +15,38 @@ import { FaUserCircle, FaImage, FaTimes } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
 import { subscribeToPosts } from '../../lib/firestore';
 
+
+const PostSkeleton = () => {
+  return (
+    <div className="bg-white flex flex-row gap-x-10 p-4 w-full rounded-2xl shadow-lg">
+      {/* Kolom Kiri: Avatar */}
+      <div className="flex flex-col items-center">
+        <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+      </div>
+      {/* Kolom Kanan: Konten */}
+      <div className='flex-1'>
+        <div className="flex flex-row gap-4 items-center">
+          <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="mt-3 space-y-2">
+            <div className="w-full h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="w-5/6 h-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="mt-3 space-y-2">
+            <div className="w-1/2 h-44 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="mt-4 flex items-center space-x-5">
+            <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
+            <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
 const CreatePost = ({ userProfile, onCreatePost }) => {
     const [content, setContent] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -107,8 +139,7 @@ const CreatePost = ({ userProfile, onCreatePost }) => {
 };
 
 
-const CategoryTabs = () => {
-  const [activeTab, setActiveTab] = useState('Untuk Anda');
+const CategoryTabs = ({ activeTab, onTabChange }) => {
   const tabs = ['Untuk Anda', 'Terpopuler', 'Kehamilan', 'MPASI', 'Tumbuh Kembang'];
 
   return (
@@ -120,7 +151,7 @@ const CategoryTabs = () => {
         {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => onTabChange(tab)} // Memanggil fungsi dari parent
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm transition-colors
               ${
                 activeTab === tab
@@ -140,17 +171,32 @@ const CategoryTabs = () => {
 export default function CommunityPage() {
   const [isSidebarExpanded, setSidebarExpanded] = useState(false);
   const {userProfile} = useAuth();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); 
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [activeTab, setActiveTab] = useState('Untuk Anda'); 
   const [isLoading, setIsLoading] = useState(true);
 
   // listener Post
   useEffect(() => {
     const unsubscribe = subscribeToPosts((fetchedPosts) => {
         setPosts(fetchedPosts);
-        setIsLoading(false);
+        setIsLoading(false)
     });
     return () => unsubscribe();
   }, []);
+
+  // Filter posts berdasarkan tab
+  useEffect(() => {
+    if (activeTab === 'Untuk Anda') {
+      setFilteredPosts(posts);
+    } else if (activeTab === 'Terpopuler') {
+      const sortedPosts = [...posts].sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
+      setFilteredPosts(sortedPosts);
+    } else {
+      const filtered = posts.filter(post => post.category === activeTab);
+      setFilteredPosts(filtered);
+    }
+  }, [activeTab, posts]);
 
   // Fungsi add post
   const handleCreatePost = async (content, imageFile) => {
@@ -222,7 +268,7 @@ export default function CommunityPage() {
                           alt="Foto Profil"
                           width={40}
                           height={40}
-                          className="rounded-full flex-shrink-0"
+                          className="rounded-full w-10 h-10 object-cover flex-shrink-0"
                         />
                       ) : (
                         <FaUserCircle size={40} className="text-gray-500 flex-shrink-0" />
@@ -231,22 +277,26 @@ export default function CommunityPage() {
             </div>
             
             <div className="mt-4">
-              <CategoryTabs />
+              <CategoryTabs activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
 
             <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
-                {/* add post */}
                 <CreatePost userProfile={userProfile} onCreatePost={handleCreatePost} />
-                {/* post */}
+
+                {/* Daftar Postingan sekarang menggunakan 'filteredPosts' */}
                 {isLoading ? (
-                    <p className="text-center text-gray-500 py-10">Memuat postingan...</p>
-                ) : posts.length > 0 ? (
-                    posts.map(post => (
+                    <>
+                      {Array.from({ length: 7 }).map((_, index) => (
+                        <PostSkeleton key={index} />
+                      ))}
+                    </>
+                ) : filteredPosts.length > 0 ? (
+                    filteredPosts.map(post => (
                         <PostCard key={post.id} post={post} />
                     ))
                 ) : (
-                    <p className="text-center text-gray-500 py-10">Jadilah yang pertama memulai percakapan!</p>
+                    <p className="text-center text-gray-500 py-10">Tidak ada postingan di kategori ini.</p>
                 )}
               </div>
               <div className="hidden lg:block lg:col-span-1">

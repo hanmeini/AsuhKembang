@@ -68,24 +68,38 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   };
 
-  const refreshUserProfile = async () => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      console.log('🔄 Memperbarui profil dari Firestore...');
-      const docRef = doc(db, 'users', currentUser.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setUserProfile({
-          ...docSnap.data(),
-          uid: currentUser.uid,
-          email: currentUser.email,
-          photoURL: currentUser.photoURL,
-          name: currentUser.displayName || docSnap.data().name || 'Pengguna Baru',
-        });
-        console.log('✅ Profil berhasil diperbarui di state.');
-      }
+const refreshUserProfile = async () => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return;
+
+  try {
+    console.log('🔄 Memperbarui profil dari Firebase Auth & Firestore...');
+
+    // Force reload biar photoURL & displayName terbaru
+    await currentUser.reload();
+    const updatedUser = auth.currentUser;
+
+    // Ambil data tambahan dari Firestore
+    const docRef = doc(db, 'users', updatedUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const firestoreData = docSnap.data();
+
+      setUserProfile({
+        uid: updatedUser.uid,
+        email: updatedUser.email,
+        displayName: updatedUser.displayName || firestoreData.displayName || 'Pengguna Baru',
+        photoURL: updatedUser.photoURL || firestoreData.photoURL || '',
+        ...firestoreData, // merge data lain (healthProfile, profiles, dsb)
+      });
+
+      console.log('✅ Profil berhasil diperbarui di state.');
     }
-  };
+  } catch (err) {
+    console.error("❌ Gagal refresh user profile:", err);
+  }
+};
 
   const value = {
     userProfile,

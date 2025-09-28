@@ -1,69 +1,123 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { FaHashtag, FaUserPlus, FaPlus,  FaCheck } from 'react-icons/fa';
 
+// Komponen untuk kartu "Tanya Ahli"
+const AskExpertCard = () => (
+    <div className="bg-white p-6 rounded-2xl shadow-lg">
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Tanya Ahli</h3>
+      <div className="flex items-center space-x-4">
+        <Image 
+          src="/images/doctor.jpg"
+          alt="Dr. Anisa" 
+          width={64}
+          height={64}
+          className="w-16 h-16 rounded-full object-cover" 
+        />
+        <div>
+          <p className="font-bold text-gray-800">Dr. Anisa, Sp.A</p>
+          <p className="text-sm text-gray-500">Dokter Spesialis Anak</p>
+        </div>
+      </div>
+      <motion.a 
+        href="https://wa.me/6287738178406" // Ganti dengan nomor WhatsApp Anda
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full mt-4 bg-teal-500 text-white font-bold text-center py-2.5 rounded-lg transition-colors"
+        whileHover={{ scale: 1.05, backgroundColor: "#0d9488" }}
+        whileTap={{ scale: 0.95 }}
+      >
+        Hubungi Ahli
+      </motion.a>
+    </div>
+);
+
+// Komponen Sidebar Komunitas Utama
 const CommunitySidebar = () => {
-  const trendingTopics = ["#MPASI", "#TipsHamil", "#TumbuhGigi", "#VaksinAnak", "#Trimester3"];
-  const upcomingEvents = [
-    { date: "15 Sep", title: "Webinar: Gizi Seimbang untuk Balita" },
-    { date: "22 Sep", title: "Tanya Jawab: Tidur Nyenyak Bayi" },
+  // Data dummy
+  const trendingTopics = [
+    { name: "#MPASI", description: "Diskusi seputar Makanan Pendamping ASI." },
+    { name: "#TipsHamil", description: "Berbagi tips untuk kehamilan sehat." },
+    { name: "#TumbuhGigi", description: "Mengatasi tantangan saat si kecil tumbuh gigi." },
   ];
 
-  return (
-    <div className="space-y-8 sticky top-10">
-      {/* Topik Populer */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Topik Populer</h3>
-            <div className="flex flex-wrap gap-2">
-            {trendingTopics.map(topic => (
-                <a key={topic} href="#" className="bg-gray-100 text-gray-600 text-sm font-semibold px-3 py-1 rounded-full hover:bg-teal-100 hover:text-teal-700">
-                {topic}
-                </a>
-            ))}
-            </div>
-        </div>
-      {/* Acara Mendatang */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Acara Mendatang</h3>
-            <ul className="space-y-4">
-            {upcomingEvents.map(event => (
-                <li key={event.title} className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-pink-100 text-pink-600 font-bold rounded-lg flex flex-col items-center justify-center leading-tight">
-                    <span>SEP</span>
-                    <span className="text-xl">{event.date.split(' ')[0]}</span>
-                </div>
-                <div>
-                    <p className="font-semibold text-gray-700">{event.title}</p>
-                    <a href="#" className="text-xs text-teal-600 hover:underline">Lihat Detail</a>
-                </div>
-                </li>
-            ))}
-            </ul>
-        </div>
+  // State untuk melacak topik yang diikuti
+  const [followedTopics, setFollowedTopics] = useState([]);
 
-      {/* */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Tanya Ahli</h3>
-        <div className="flex items-center space-x-4">
-            <img 
-            src="/images/doctor-avatar.jpg" // Ganti dengan foto ahli Anda
-            alt="Dr. Anisa" 
-            className="w-16 h-16 rounded-full object-cover" 
-            />
-            <div>
-            <p className="font-bold text-gray-800">Dr. Anisa, Sp.A</p>
-            <p className="text-sm text-gray-500">Dokter Spesialis Anak</p>
-            </div>
-        </div>
-        <a 
-            href="/tanya-ahli" 
-            className="block w-full mt-4 bg-teal-500 text-white font-bold text-center py-2 rounded-lg hover:bg-teal-600 transition-colors"
-        >
-            Ajukan Pertanyaan
-        </a>
-        </div>
-    </div>
+  // Fungsi untuk menangani klik tombol "Ikuti"
+  const handleFollowToggle = (topicName) => {
+    setFollowedTopics(prev => 
+      prev.includes(topicName)
+        ? prev.filter(t => t !== topicName) // Jika sudah ada, hapus (unfollow)
+        : [...prev, topicName] // Jika belum ada, tambahkan (follow)
+    );
+  };
+
+  // Varian animasi
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.2 }
+    }
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
+  return (
+    <motion.div 
+        className="space-y-8 sticky top-10"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+    >
+      <motion.div variants={itemVariants}>
+        <AskExpertCard />
+      </motion.div>
+
+      {/* PERBAIKAN: Kartu "Ikuti Topik" menggantikan "Acara Mendatang" */}
+      <motion.div variants={itemVariants} className="bg-white p-6 rounded-2xl shadow-lg">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Ikuti Topik</h3>
+        <ul className="space-y-4">
+          {trendingTopics.map(topic => {
+            const isFollowed = followedTopics.includes(topic.name);
+            return (
+              <li key={topic.name} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                      <div className="bg-gray-100 p-2 rounded-lg">
+                          <FaHashtag className="text-gray-500"/>
+                      </div>
+                      <div>
+                          <p className="font-semibold text-sm text-gray-800">{topic.name}</p>
+                          <p className="text-xs text-gray-500">{topic.description}</p>
+                      </div>
+                  </div>
+                  <motion.button 
+                      onClick={() => handleFollowToggle(topic.name)}
+                      className={`font-bold px-3 py-1 text-xs rounded-full border transition-colors flex items-center gap-1.5
+                        ${isFollowed 
+                            ? 'bg-teal-500 text-white border-teal-500' 
+                            : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'
+                        }`}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                  >
+                    {isFollowed ? <FaCheck size={10}/> : <FaPlus size={10}/>}
+                    {isFollowed ? 'Diikuti' : 'Ikuti'}
+                  </motion.button>
+              </li>
+            );
+          })}
+        </ul>
+      </motion.div>
+    </motion.div>
   );
 };
 
 export default CommunitySidebar;
+

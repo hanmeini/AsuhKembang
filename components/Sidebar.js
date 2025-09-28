@@ -34,11 +34,12 @@ const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave }) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="p-4 flex items-center justify-center">
-        <div className="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
-          H
+        <div className={`flex ${isExpanded ? 'justify-start' : 'justify-center'} justify-center items-center p-4`}>
+          <div className="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+            <Image src='/images/logo-asuh-kembang.png' alt='logo' width={40} height={40}/>
+          </div>
+          {isExpanded && <span className="text-gray-700 font-semibold">Asuh Kembang</span>}
         </div>
-      </div>
 
       <nav className="flex-grow px-4 pt-4 space-y-2">
         <SidebarLink href="/dashboard" icon={<FaChartBar size={24} />} text="Dashboard" expanded={isExpanded} />
@@ -57,7 +58,7 @@ const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave }) => {
             alt="Foto Profil"
             width={40}
             height={40}
-            className="rounded-full flex-shrink-0"
+            className="rounded-full object-cover w-8 h-8 flex-shrink-0"
           />
         ) : (
           <FaUserCircle size={40} className="text-gray-500 flex-shrink-0" />

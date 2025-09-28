@@ -52,13 +52,15 @@ export default function Navbar() {
     <header className="fixed left-1/2 -translate-x-1/2 container z-50 max-w-6xl">
       <div className='bg-white backdrop-blur-sm rounded-xl shadow-lg'>
         <nav className="flex items-center justify-between px-6 py-4">
-          <Link href="/" className="text-2xl font-bold text-gray-800">
-            Healthier
+          <Link href="/" className="text-xl items-center flex flex-row font-semibold text-gray-800">
+            <Image src='/images/logo-asuh-kembang.png' width={40} height={40} alt='logo'/>
+            <span className="ml-2 inline">Asuh Kembang</span>
           </Link>
 
           {/* Navigasi Desktop (tetap sama) */}
-          <ul className="hidden md:flex items-center space-x-8">
+          <ul className="hidden md:flex items-center space-x-8 -ml-10">
             <li><NavLink href="/">Beranda</NavLink></li>
+            <li><NavLink href="/dashboard">Dashboard</NavLink></li>
             <li><NavLink href="/scan">Scan Makanan</NavLink></li>
             <li><NavLink href="/jurnal">Jurnal</NavLink></li>
             <li><NavLink href="/komunitas">Komunitas</NavLink></li>
@@ -112,13 +114,16 @@ export default function Navbar() {
             className="fixed inset-0 bg-black/50 z-50 md:hidden"
           >
             <motion.div
-              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="fixed top-0 left-0 right-0 h-full w-full bg-white shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center p-4 border-b border-gray-300">
-                <span className="text-2xl font-bold text-gray-800">Healthier</span>
+                <div className='flex items-center text-xl font-semibold text-gray-800'>
+                  <Image src='/images/logo-asuh-kembang.png' width={40} height={40} alt='logo'/>
+                  <span className="ml-2 inline">Asuh Kembang</span>
+                </div>
                 <button onClick={() => setIsMenuOpen(false)} className="p-2 transition hover:rotate-90 duration-300"><X size={20}/></button>
               </div>
               <nav className="flex flex-col p-4 space-y-1 bg-white">

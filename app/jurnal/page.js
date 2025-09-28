@@ -174,7 +174,7 @@ const JournalDetailView = ({ entry, onBack, userProfile, activeProfile }) => {
                         </div>
                     </div>
                  )}
-                <WeeklyNutritionSummary week={entry.week} />
+                {/* <WeeklyNutritionSummary week={entry.week} /> */}
             </div>
         </div>
     );

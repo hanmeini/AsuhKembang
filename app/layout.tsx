@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import './globals.css'
+import './globals.css';
 import { LayoutManager } from "./layoutManager"; 
 import { Manrope } from 'next/font/google';
 import { AuthProvider } from "../context/AuthContext";
@@ -14,10 +14,10 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Healthier - Panduan Nutrisi untuk Ibu Hamil dan Menyusui",
-  description: "Jelajahi wisata sesuai mood",
+  title: "Asuh Kembang - Panduan Nutrisi untuk Ibu Hamil dan Menyusui",
+  description: "Aplikasi web untuk membantu ibu hamil dan menyusui memantau asupan nutrisi harian mereka.",
   icons: {
-    icon: "/images/logo-pp.png?v=2", 
+    icon: "/images/logo-asuh-kembang.png", 
   },
 };
 

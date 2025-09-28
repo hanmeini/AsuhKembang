@@ -140,7 +140,7 @@ const FoodAi = () => {
                   href="/scan"
                   className="bg-orange-400 flex flex-row items-center text-white text-center font-semibold px-8 py-4 rounded-full w-full md:rounded-xl hover:bg-amber-300 transition-colors shadow-md"
                 >
-                  Start Scanning Now
+                  Pindai Sekarang
                   <span className="ml-2"><FaLongArrowAltRight/></span>
                 </a>
               </div>
