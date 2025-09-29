@@ -25,6 +25,7 @@ const Sidebar = ({
     return (
     <>
       <button 
+      aria-label="Toggle Menu"
         onClick={onToggleExpand}
         className="fixed top-4 right-4 z-100 p-2 bg-white rounded-full shadow-lg md:hidden"
       >
@@ -49,7 +50,7 @@ const Sidebar = ({
               <LayoutDashboard size={20} />
               <span className="font-semibold">Dashboard</span>
             </Link>
-            <button onClick={onNewChat} className="w-full flex items-center gap-3 px-4 py-2.5 bg-teal-100 text-teal-700 rounded-full hover:bg-teal-200 transition-colors">
+            <button aria-label="new chat" onClick={onNewChat} className="w-full flex items-center gap-3 px-4 py-2.5 bg-teal-100 text-teal-700 rounded-full hover:bg-teal-200 transition-colors">
               <MessageSquarePlus size={20} />
               <span className="font-semibold">Percakapan Baru</span>
             </button>
@@ -62,6 +63,7 @@ const Sidebar = ({
           <div className="flex-1 overflow-y-auto pr-2 space-y-1">
             {chatHistory.map((chat) => (
               <button 
+                aria-label="chat history"
                 key={chat.id} 
                 onClick={() => onSelectChat(chat)} 
                 className={`flex items-center gap-3 w-full text-left px-4 py-2 rounded-full transition-colors group
@@ -246,9 +248,9 @@ export default function ChatPage() {
                         <div className="w-full pt-4 relative">
                             {!hasMessages && (
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                    <button onClick={() => handleSendMessage('Apa saja makanan yang baik untuk ibu hamil?')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Apa saja makanan yang baik untuk ibu hamil?</p></button>
-                                    <button onClick={() => handleSendMessage('Berapa kalori dalam sepiring nasi goreng?')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Berapa kalori dalam sepiring nasi goreng?</p></button>
-                                    <button onClick={() => handleSendMessage('Buatkan menu makan sehat untuk seminggu')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Buatkan menu makan sehat untuk seminggu</p></button>
+                                    <button aria-label="prompt" onClick={() => handleSendMessage('Apa saja makanan yang baik untuk ibu hamil?')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Apa saja makanan yang baik untuk ibu hamil?</p></button>
+                                    <button aria-label="prompt" onClick={() => handleSendMessage('Berapa kalori dalam sepiring nasi goreng?')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Berapa kalori dalam sepiring nasi goreng?</p></button>
+                                    <button aria-label="prompt" onClick={() => handleSendMessage('Buatkan menu makan sehat untuk seminggu')} className="bg-white/60 backdrop-blur-sm border border-gray-200/70 p-4 rounded-xl hover:border-teal-300 transition text-left"><p className="font-semibold text-sm">Buatkan menu makan sehat untuk seminggu</p></button>
                                 </div>
                             )}
 
@@ -262,7 +264,7 @@ export default function ChatPage() {
                                     className="w-full py-5 pl-6 pr-16 bg-white backdrop-blur-sm border-gray-200 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 transition resize-none"
                                     maxRows={5} 
                                 />
-                                <button type="submit" disabled={isLoading} className="absolute right-3 bottom-5 bg-teal-500 text-white p-3 rounded-full disabled:bg-gray-400 hover:bg-teal-600 transition">
+                                <button aria-label="submit" type="submit" disabled={isLoading} className="absolute right-3 bottom-5 bg-teal-500 text-white p-3 rounded-full disabled:bg-gray-400 hover:bg-teal-600 transition">
                                     <FaPaperPlane />
                                 </button>
                             </form>

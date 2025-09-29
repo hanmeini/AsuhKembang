@@ -1,13 +1,11 @@
 'use client';
-import { AnimatePresence } from 'framer-motion';
 import React from 'react';
 import { 
-  FaRegBell, FaCalendarAlt, FaPlus, FaMinus, FaHeartbeat, FaUsers
+  FaRegBell, FaHeartbeat, FaUsers
 } from 'react-icons/fa';
 import { IoWater, IoJournal, IoScan } from "react-icons/io5";
 import Sidebar from '../../components/Sidebar';
 import AuthGuard from '../../context/AuthGuard';
-import { useSidebar } from '../../hooks/sidebar';
 import { useState, useEffect } from 'react';
 import HealthProfileModal from '../../components/HealthProfileModal';
 import { useAuth } from '../../context/AuthContext';
@@ -267,7 +265,7 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
                 <ProfileSelector profiles={userProfile?.profiles} activeProfile={activeProfile} onProfileChange={setActiveProfile} />
               </div>
             </div>
-            <button className="p-3 rounded-full hover:bg-gray-200">
+            <button aria-label="notif" className="p-3 rounded-full hover:bg-gray-200">
               <FaRegBell size={24} className="text-gray-600"/>
             </button>
           </header>
@@ -406,8 +404,8 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
                 </div>
                 {/* Tombol Interaktif */}
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => handleWaterChange(-1)} className="w-7 h-7 bg-gray-200 rounded-full font-bold text-lg flex items-center justify-center hover:bg-gray-300">-</button>
-                  <button onClick={() => handleWaterChange(1)} className="w-7 h-7 bg-blue-500 text-white rounded-full font-bold text-lg flex items-center justify-center hover:bg-blue-600">+</button>
+                  <button aria-label="minum" onClick={() => handleWaterChange(-1)} className="w-7 h-7 bg-gray-200 rounded-full font-bold text-lg flex items-center justify-center hover:bg-gray-300">-</button>
+                  <button aria-label="minum" onClick={() => handleWaterChange(1)} className="w-7 h-7 bg-blue-500 text-white rounded-full font-bold text-lg flex items-center justify-center hover:bg-blue-600">+</button>
                 </div>
               </div>
               <p className="text-right text-3xl font-bold text-blue-600 mt-4">{waterIntake} <span className="text-lg font-medium text-gray-500">/ 8 Gelas</span></p>
@@ -476,8 +474,8 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-3 text-blue-600"><IoWater /><span className="font-bold">Minum Air</span></div>
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => handleWaterChange(-1)} className="w-7 h-7 bg-gray-200 rounded-full font-bold text-lg flex items-center justify-center hover:bg-gray-300">-</button>
-                  <button onClick={() => handleWaterChange(1)} className="w-7 h-7 bg-blue-500 text-white rounded-full font-bold text-lg flex items-center justify-center hover:bg-blue-600">+</button>
+                  <button aria-label="minum" onClick={() => handleWaterChange(-1)} className="w-7 h-7 bg-gray-200 rounded-full font-bold text-lg flex items-center justify-center hover:bg-gray-300">-</button>
+                  <button aria-label="minum" onClick={() => handleWaterChange(1)} className="w-7 h-7 bg-blue-500 text-white rounded-full font-bold text-lg flex items-center justify-center hover:bg-blue-600">+</button>
                 </div>
               </div>
               <p className="text-right text-3xl font-bold text-blue-600 mt-4">{waterIntake} <span className="text-lg font-medium text-gray-500">/ 8 Gelas</span></p>

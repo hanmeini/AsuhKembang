@@ -183,6 +183,7 @@ const JournalDetailView = ({ entry, onBack, userProfile, activeProfile }) => {
 
 const SymptomButton = ({ symptom, isSelected, onClick }) => (
   <button 
+    aria-label="Symptom"
     onClick={onClick}
     className={`px-4 py-2 text-sm font-semibold rounded-full border transition-colors ${
       isSelected ? 'bg-pink-500 text-white border-pink-500' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -194,6 +195,7 @@ const SymptomButton = ({ symptom, isSelected, onClick }) => (
 
 const MoodButton = ({ icon, label, isSelected, onClick }) => (
   <button 
+    aria-label="Mood"
     onClick={onClick}
     className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 w-16 h-16 justify-center ${
       isSelected ? 'bg-amber-400 scale-110' : 'bg-gray-100 hover:bg-amber-100'
@@ -248,7 +250,7 @@ const NewJournalForm = ({ week, onSave, onBack }) => {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-2xl shadow-lg relative">
-            <button onClick={onBack} className="absolute top-4 left-4 text-gray-400 hover:text-gray-700"><FaArrowLeft size={20}/></button>
+            <button aria-label="back" onClick={onBack} className="absolute top-4 left-4 text-gray-400 hover:text-gray-700"><FaArrowLeft size={20}/></button>
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">Jurnal Minggu ke-{week}</h2>
             
             {/* Progress Bar */}
@@ -311,6 +313,7 @@ const NewJournalForm = ({ week, onSave, onBack }) => {
 
             <div className="mt-8 flex justify-between">
                 <button 
+                    aria-label="back"
                     onClick={handleBack} 
                     disabled={step === 1 || isSaving} 
                     className="px-6 py-2 bg-gray-200 rounded-lg font-semibold disabled:opacity-50 transition-transform active:scale-95"
@@ -319,13 +322,15 @@ const NewJournalForm = ({ week, onSave, onBack }) => {
                 </button>
                 {step < 4 ? (
                     <button 
+                    aria-label="next"
                         onClick={handleNext} 
                         className="px-6 py-2 bg-pink-600 text-white rounded-lg font-semibold transition-all duration-200 hover:bg-pink-500 active:scale-95 active:brightness-90"
                     >
                         Lanjut
                     </button>
                 ) : (
-                    <button 
+                    <button
+                    aria-label="save"
                         onClick={handleSave} 
                         disabled={isSaving} 
                         className="px-6 py-2 bg-teal-500 text-white rounded-lg font-semibold transition-all duration-200 hover:bg-teal-600 disabled:bg-gray-400 active:scale-95 active:brightness-90"
