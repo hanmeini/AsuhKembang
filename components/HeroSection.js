@@ -28,10 +28,13 @@ const HeroSection = () => {
       >
         <div className="flex flex-col p-6 md:p-10 justify-center items-center relative text-center">
           <div className="absolute top-[65%] md:top-1/10 -left-2 md:left-auto md:right-8 lg:-right-20 pointer-events-none">
-            <img
+            <Image
               src="/images/hug.png"
               className="animate-float-y w-16 md:w-20 lg:w-24"
               alt="Ilustrasi Pelukan"
+              height={40}
+              width={40}  
+              priority
             />
           </div>
 
@@ -71,7 +74,7 @@ const HeroSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             >
-                <Image src="/images/hero1.jpg" alt="Ibu Hamil Sehat" fill className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
+                <Image src="/images/hero1.jpg" alt="Ibu Hamil Sehat" fill priority className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center p-4 text-white">
                     <h4 className="font-bold">Gizi Ibu Hamil</h4>
                     <p className="text-xs mt-1">Pastikan nutrisi terbaik selama masa kehamilan.</p>
@@ -87,7 +90,7 @@ const HeroSection = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
                 >
-                    <Image src="/images/hero3.jpg" alt="Cegah Stunting" fill className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
+                    <Image src="/images/hero3.jpg" priority alt="Cegah Stunting" fill className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center p-4 text-white">
                         <h4 className="font-bold">Cegah Stunting</h4>
                         <p className="text-xs mt-1">Pantau tumbuh kembang anak sejak dini.</p>
@@ -103,7 +106,7 @@ const HeroSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
             >
-                <Image src="/images/hero2.jpg" alt="Nutrisi Anak" fill className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
+                <Image src="/images/hero2.jpg" priority alt="Nutrisi Anak" fill className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center p-4 text-white">
                     <h4 className="font-bold">MPASI Cerdas</h4>
                     <p className="text-xs mt-1">Analisis gizi makanan pendamping ASI dengan mudah.</p>
