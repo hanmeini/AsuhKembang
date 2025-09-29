@@ -9,6 +9,11 @@ const nextConfig = {
     ],
     formats: ["image/avif", "image/webp"],
   },
+  swcMinify: true,
+  experimental: {
+    legacyBrowsers: false,
+    browsersListForSwc: true,
+  },
 };
 
 export default nextConfig;
