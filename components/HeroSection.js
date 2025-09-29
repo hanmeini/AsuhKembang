@@ -80,7 +80,7 @@ const HeroSection = () => {
                 src="/images/hero1.jpg" 
                 alt="Ibu hamil sehat dengan nutrisi seimbang"
                 fill 
-                sizes="(max-width: 768px) 200px, 280px"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 priority
                 className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
               />

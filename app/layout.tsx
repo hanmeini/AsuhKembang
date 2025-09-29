@@ -4,6 +4,7 @@ import { LayoutManager } from "./layoutManager";
 import { Manrope } from 'next/font/google';
 import { AuthProvider } from "../context/AuthContext";
 import { Providers } from "./providers";
+import { Head } from 'next/document'
 
 
 const manrope = Manrope({
@@ -28,6 +29,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={manrope.variable}>
+      <head>
+        <link rel="preconnect" href="https://apis.google.com" />
+        <link rel="preconnect" href="https://www.googleapis.com" />
+        <link rel="preconnect" href="https://www.gstatic.com" />
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+      </head>
       <body>
         <Providers>
           <LayoutManager>{children}</LayoutManager>
