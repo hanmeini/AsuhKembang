@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={manrope.variable}>
+    <html lang="id" className={manrope.variable} style={{ scrollBehavior: 'smooth' }}>
       <head>
         <link rel="preconnect" href="https://apis.google.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />

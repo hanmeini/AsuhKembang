@@ -19,6 +19,7 @@ const HoverCard = ({ imageUrl, alt, title, description }) => (
       src={imageUrl}
       alt={alt}
       fill={true}
+      sizes="(max-width: 768px) 150px, 300px"
       className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
     />
     <div

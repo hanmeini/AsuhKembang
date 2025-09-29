@@ -82,13 +82,13 @@ const Testimonials = () => {
                   <p className="mt-6 text-gray-700">{testimonial.quote}</p>
                   <div className="mt-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <Image src={testimonial.avatar} alt={testimonial.name} width={48} height={48} className="rounded-full object-cover" />
+                      <Image src={testimonial.avatar} sizes="(max-width: 768px) 150px, 300px" alt={testimonial.name} width={48} height={48} className="rounded-full w-10 h-10 object-cover" />
                       <div>
                         <p className="font-bold">{testimonial.name}</p>
                         <p className="text-sm text-gray-600">{testimonial.title}</p>
                       </div>
                     </div>
-                    <Image src={testimonial.companyLogo} alt="Company Logo" width={80} height={20} className="object-contain rounded-full" />
+                    <Image src={testimonial.companyLogo} sizes="(max-width: 768px) 150px, 300px" alt="Company Logo" width={80} height={20} className="object-contain w-10 h-10 rounded-full" />
                   </div>
                 </div>
               </SwiperSlide>
