@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 // Impor ikon dari library (pastikan Anda sudah menginstalnya: npm install react-icons)
 import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+import Image from 'next/image';
 
 const Footer = () => {
   return (
@@ -12,9 +13,12 @@ const Footer = () => {
           
           {/* Kolom 1: Brand & Misi */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
-            <h3 className="text-xl font-bold text-white mb-4">Healthier</h3>
+            <Link href="/" className="text-xl items-center flex flex-row font-semibold text-white mb-4">
+              <Image src='/images/logo-asuh-kembang.png' width={40} height={40} className='rounded-full' alt='logo'/>
+              <span className="ml-2 inline">Asuh Kembang</span>
+            </Link>
             <p className="text-sm text-gray-400">
-              Providing the best resources for parents to find safe and reliable childcare and nutritional guidance.
+              Menyediakan sumber daya terbaik bagi orang tua untuk menemukan tempat penitipan anak yang aman dan terpercaya, serta panduan nutrisi.
             </p>
             <div className="flex space-x-4 mt-6">
               <a href="#" className="hover:text-white"><FaFacebook size={20} /></a>
@@ -26,9 +30,9 @@ const Footer = () => {
 
           {/* Kolom 2: Company Links */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Company</h4>
+            <h4 className="font-semibold text-white mb-4">Perusahaan</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/about" className="hover:text-white">About Us</Link></li>
+              <li><Link href="#about" className="hover:text-white">About</Link></li>
               <li><Link href="/careers" className="hover:text-white">Careers</Link></li>
               <li><Link href="/press" className="hover:text-white">Press</Link></li>
             </ul>

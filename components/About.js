@@ -78,7 +78,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section className="container mx-auto px-6 py-16 md:py-24 space-y-24">
+    <section id='about' className="container mx-auto px-6 py-16 md:py-24 space-y-24">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center pt-16">
         <div className="md:col-span-1 text-2xl md:text-3xl font-semibold leading-snug">
           <p>"Membangun hubungan adalah inti dari apa yang kami lakukan. Dalam suasana ceria dan penuh kasih sayang..."</p>
