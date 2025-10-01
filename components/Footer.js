@@ -21,10 +21,10 @@ const Footer = () => {
               Menyediakan sumber daya terbaik bagi orang tua untuk menemukan tempat penitipan anak yang aman dan terpercaya, serta panduan nutrisi.
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="hover:text-white"><FaFacebook size={20} /></a>
-              <a href="#" className="hover:text-white"><FaInstagram size={20} /></a>
-              <a href="#" className="hover:text-white"><FaTwitter size={20} /></a>
-              <a href="#" className="hover:text-white"><FaYoutube size={20} /></a>
+              <a href="https://facebook.com" className="hover:text-white"><FaFacebook size={20} /></a>
+              <a href="https://instagram.com" className="hover:text-white"><FaInstagram size={20} /></a>
+              <a href="https://x.com" className="hover:text-white"><FaTwitter size={20} /></a>
+              <a href="https://www.youtube.com" className="hover:text-white"><FaYoutube size={20} /></a>
             </div>
           </div>
 

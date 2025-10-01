@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { 
-  FaRegBell, FaHeartbeat, FaUsers
+  FaRegBell, FaHeartbeat, FaUsers,FaUserCircle
 } from 'react-icons/fa';
 import { IoWater, IoJournal, IoScan } from "react-icons/io5";
 import Sidebar from '../../components/Sidebar';
@@ -259,15 +259,21 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
           <header className="flex justify-between items-center p-6 md:p-10">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Selamat Pagi, {userProfile?.name || 'Pengguna'}! 👋</h2>
-              
-              {/* PEMILIH PROFIL */}
               <div className="mt-2">
                 <ProfileSelector profiles={userProfile?.profiles} activeProfile={activeProfile} onProfileChange={setActiveProfile} />
               </div>
             </div>
-            <button aria-label="notif" className="p-3 rounded-full hover:bg-gray-200">
-              <FaRegBell size={24} className="text-gray-600"/>
-            </button>
+            {userProfile?.photoURL ? (
+              <Image
+                src={userProfile.photoURL}
+                alt="Foto Profil"
+                width={40}
+                height={40}
+                className="rounded-full object-cover w-10 h-10 flex-shrink-0"
+              />
+            ) : (
+              <FaUserCircle size={40} className="text-gray-500 flex-shrink-0" />
+            )}
           </header>
 
         {/* =======Laptop======== */}

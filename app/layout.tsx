@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Asuh Kembang - Panduan Nutrisi untuk Ibu Hamil dan Menyusui",
   description: "Aplikasi web untuk membantu ibu hamil dan menyusui memantau asupan nutrisi harian mereka.",
   icons: {
-    icon: "/images/logo-asuh-kembang.png", 
+    icon: "/images/logo-asuh-kembang.png",
   },
 };
 
@@ -30,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="id" className={manrope.variable} style={{ scrollBehavior: 'smooth' }}>
       <head>
+        <link rel="icon" type="image/png" href="/images/logo-asuh-kembang.png" />
         <link rel="preconnect" href="https://apis.google.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />
         <link rel="preconnect" href="https://www.gstatic.com" />

@@ -59,8 +59,11 @@ export default function Navbar() {
 
           {/* Navigasi Desktop (tetap sama) */}
           <ul className="hidden md:flex items-center space-x-8 -ml-10">
-            <li><NavLink href="/">Beranda</NavLink></li>
-            <li><NavLink href="/dashboard">Dashboard</NavLink></li>
+            {userProfile ? (
+              <li><NavLink href="/dashboard">Dashboard</NavLink></li>
+            ):(
+              <li><NavLink href="/">Beranda</NavLink></li>
+            )}
             <li><NavLink href="/scan">Scan Makanan</NavLink></li>
             <li><NavLink href="/jurnal">Jurnal</NavLink></li>
             <li><NavLink href="/komunitas">Komunitas</NavLink></li>
@@ -79,9 +82,8 @@ export default function Navbar() {
                 </button>
                 <AnimatePresence>
                     {isProfileOpen && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden border">
-                            <Link href="/profil" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><User size={16}/> Profil</Link>
-                            <Link href="/pengaturan" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><Settings size={16}/> Pengaturan</Link>
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <Link href="/profie" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><User size={16}/> Profil</Link>
                             <hr/>
                             <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"><LogOut size={16}/> Logout</button>
                         </motion.div>
