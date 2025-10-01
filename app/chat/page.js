@@ -41,9 +41,10 @@ const Sidebar = ({
         
         {/* Header dan Navigasi Utama */}
         <div className="flex-shrink-0">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-teal-600">Healthier</h1>
-          </div>
+          <Link href="/" className="text-lg mb-4 items-center flex flex-row font-semibold text-gray-800">
+            <Image src='/images/logo-asuh-kembang.png' width={40} height={40} alt='logo'/>
+            <span className="ml-2 inline">Asuh Kembang</span>
+          </Link>
           
           <nav className="space-y-2">
             <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 rounded-full hover:bg-gray-200 transition-colors">
