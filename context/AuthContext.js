@@ -15,16 +15,13 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-     console.log("⏳ Menunggu auth...");
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const docRef = doc(db, 'users', user.uid);
         try {
-          console.log('🟡 Login terdeteksi. UID:', user.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            console.log('✅ Dokumen user ditemukan. Menggabungkan data...');
             setUserProfile({
               ...docSnap.data(),
               uid: user.uid,
@@ -33,7 +30,6 @@ export function AuthProvider({ children }) {
               name: user.displayName || docSnap.data().name || 'Pengguna Baru',
             });
           } else {
-            console.log('📄 Dokumen tidak ditemukan. Membuat user baru...');
             const newUserProfile = {
               name: user.displayName || 'Pengguna Baru',
               email: user.email,
@@ -42,7 +38,6 @@ export function AuthProvider({ children }) {
               createdAt: serverTimestamp(),
             };
             await setDoc(docRef, newUserProfile);
-            console.log('✅ Profil baru berhasil dibuat');
 
             setUserProfile({
               uid: user.uid,
@@ -73,7 +68,6 @@ const refreshUserProfile = async () => {
   if (!currentUser) return;
 
   try {
-    console.log('🔄 Memperbarui profil dari Firebase Auth & Firestore...');
 
     // Force reload biar photoURL & displayName terbaru
     await currentUser.reload();

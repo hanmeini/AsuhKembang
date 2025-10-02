@@ -94,12 +94,6 @@ export default function ChatPage() {
     const userName = userProfile?.displayName || 'Pengguna';
 
     // Fungsi baru untuk menangani penekanan tombol Enter
-
-    const handleInputSubmit = (e) => {
-        e.preventDefault();
-        handleSendMessage(input);
-        setInput('');
-    };
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault(); 
@@ -171,6 +165,12 @@ export default function ChatPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleInputSubmit = (e) => {
+        e.preventDefault();
+        handleSendMessage(input);
+        setInput('');
     };
 
     const handleNewChat = () => {
@@ -258,7 +258,7 @@ export default function ChatPage() {
                             )}
 
                        <div className="flex-shrink-0 fixed bottom-14 left-0 md:left-auto md:right-auto right-0 md:bottom-0 w-full md:w-[60%] my-4">
-                            <form onSubmit={handleSendMessage} className="relative">
+                            <form onSubmit={handleInputSubmit} className="relative">
                                 <TextareaAutosize
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
