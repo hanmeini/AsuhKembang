@@ -13,6 +13,7 @@ import { subscribeToJournals, updateUserActiveTrimester } from '../../lib/firest
 import JournalingAnimation from '../../components/jurnalAnimation';
 import FloatingChatButton from '../../components/FloatingChatButton';
 import WeeklyNutritionSummary from '../../components/NutritionWeekly';
+import WelcomeModal from '../../components/WelcomeModal';
 
 const WeekBox = ({ week, isComplete, isCurrent, onClick }) => (
     <motion.button 
@@ -468,6 +469,16 @@ export default function TrackerPage() {
   const [journalEntries, setJournalEntries] = useState({});
   const [isSavingJournal, setIsSavingJournal] = useState(false);
   const [currentWeek, setCurrentWeek] = useState(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+    // Efek untuk memeriksa apakah pengguna baru (belum punya sub-profil)
+    useEffect(() => {
+      if (userProfile && (!userProfile.profiles || userProfile.profiles.length === 0)) {
+          setShowWelcomeModal(true);
+      } else {
+          setShowWelcomeModal(false);
+      }
+    }, [userProfile]);
 
   useEffect(() => {
     if (userProfile?.profiles?.length > 0) {
@@ -611,6 +622,7 @@ export default function TrackerPage() {
 
   return (
     <AuthGuard>
+        {showWelcomeModal && <WelcomeModal />}
       <AnimatePresence>
           {isSavingJournal && <JournalingAnimation />}
       </AnimatePresence>

@@ -20,6 +20,7 @@ import ProfileSelector from '../../components/profileSelector';
 import PregnancyInfo from '../../components/tespregnant';
 import FloatingChatButton from '../../components/FloatingChatButton';
 import NutritionChart from '../../components/NutritionChart';
+import WelcomeModal from '../../components/WelcomeModal';
 
 
 const DashboardPage = () => {
@@ -40,6 +41,17 @@ const DashboardPage = () => {
   const [tdeeResult, setTdeeResult] = useState(null);
   const [macroTargets, setMacroTargets] = useState({ protein: 150, carbs: 250, fat: 70 });
   const [currentWeek, setCurrentWeek] = useState(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+  // Efek untuk memeriksa apakah pengguna baru (belum punya sub-profil)
+  useEffect(() => {
+    if (userProfile && (!userProfile.profiles || userProfile.profiles.length === 0)) {
+        setShowWelcomeModal(true);
+    } else {
+        setShowWelcomeModal(false);
+    }
+  }, [userProfile]);
+
 
   // fetch aktif profile
   // Efek 1: Mengatur profil aktif saat userProfile berubah
@@ -247,6 +259,7 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
 
   return (
     <AuthGuard>
+      {showWelcomeModal && <WelcomeModal />}
       {isModalOpen && ( <HealthProfileModal userProfile={userProfile} onSave={handleSaveProfile} onClose={() => setIsModalOpen(false)} /> )}
     <div className="">
       {/* ===== SIDEBAR ===== */}

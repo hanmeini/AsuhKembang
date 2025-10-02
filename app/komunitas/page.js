@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { FaUserCircle, FaImage, FaTimes } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
 import { subscribeToPosts } from '../../lib/firestore';
+import WelcomeModal from '../../components/WelcomeModal';
 
 
 const PostSkeleton = () => {
@@ -54,6 +55,7 @@ const CreatePost = ({ userProfile, onCreatePost }) => {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
     const fileInputRef = useRef(null);
+
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -175,6 +177,16 @@ export default function CommunityPage() {
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [activeTab, setActiveTab] = useState('Untuk Anda'); 
   const [isLoading, setIsLoading] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+    // Efek untuk memeriksa apakah pengguna baru (belum punya sub-profil)
+  useEffect(() => {
+    if (userProfile && (!userProfile.profiles || userProfile.profiles.length === 0)) {
+        setShowWelcomeModal(true);
+    } else {
+        setShowWelcomeModal(false);
+    }
+  }, [userProfile]);
 
   // listener Post
   useEffect(() => {
@@ -243,6 +255,7 @@ export default function CommunityPage() {
 
   return (
     <AuthGuard>
+        {showWelcomeModal && <WelcomeModal />}
         <style jsx global>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;

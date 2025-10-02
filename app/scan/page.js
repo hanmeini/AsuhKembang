@@ -14,6 +14,8 @@ import Image from 'next/image';
 import BottomNavBar from '../../components/BottomNav';
 import { motion } from 'framer-motion';
 import imageCompression from 'browser-image-compression';
+import { useRouter } from 'next/navigation';
+import WelcomeModal from '../../components/WelcomeModal';
 
 // Komponen kecil baru untuk menampilkan item di riwayat
 const HistoryItem = ({ scan, onClick, isActive }) => (
@@ -52,10 +54,22 @@ export default function ScanPage() {
   const profiles = userProfile?.profiles || [];
   const [activeProfile, setActiveProfile] = useState(null);
   const [selectedHistoryScan, setSelectedHistoryScan] = useState(null);
-
+  const router = useRouter();
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  // Efek untuk memeriksa apakah pengguna baru (belum punya sub-profil)
+  useEffect(() => {
+    if (userProfile && (!userProfile.profiles || userProfile.profiles.length === 0)) {
+        setShowWelcomeModal(true);
+    } else {
+        setShowWelcomeModal(false);
+    }
+  }, [userProfile]);
+
+
   
   // Listener untuk mengambil riwayat scan hari ini secara real-time
   useEffect(() => {
@@ -199,6 +213,7 @@ const currentResult = result || selectedHistoryScan;
 
   return (
     <AuthGuard>
+      {showWelcomeModal && <WelcomeModal />}
       {isLoading && <ScanningAnimation />}
       <div className="flex bg-gray-50 pb-20">
         <Sidebar isExpanded={isSidebarExpanded} onMouseEnter={() => setSidebarExpanded(true)} onMouseLeave={() => setSidebarExpanded(false)} />

@@ -83,7 +83,7 @@ export default function Navbar() {
                 <AnimatePresence>
                     {isProfileOpen && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden">
-                            <Link href="/profie" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><User size={16}/> Profil</Link>
+                            <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><User size={16}/> Profil</Link>
                             <hr/>
                             <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"><LogOut size={16}/> Logout</button>
                         </motion.div>
