@@ -20,6 +20,7 @@ const FeatureCard = ({ title, description }) => {
                 src={imageUrl}
                 alt={title}
                 fill 
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 20vw"
                 className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" 
             />
             {/* Overlay gradasi gelap agar teks selalu terbaca */}
