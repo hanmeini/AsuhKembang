@@ -6,7 +6,7 @@ import Sidebar from '../../components/Sidebar';
 import BottomNavBar from '../../components/BottomNav';
 import { useAuth } from '../../context/AuthContext';
 import GrowthChart from '../../components/GrafikAnak';
-import { addGrowthEntry, subscribeToGrowthEntries } from '../../lib/firestore';
+import { addGrowthEntry, subscribeToGrowthEntries, deleteGrowthEntry } from '../../lib/firestore';
 import { FaChartArea, FaChild, FaSave } from 'react-icons/fa';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -42,24 +42,35 @@ const AISummaryCard = ({ summary, isLoading }) => (
 );
 
 // ================== KOMPONEN BARU UNTUK TABEL RIWAYAT ==================
-const HistoryTable = ({ entries }) => (
-    <div className="bg-white p-6 rounded-2xl shadow-lg">
+const HistoryTable = ({ entries, onDelete }) => {
+    const formatDate = (dateValue) => {
+  if (dateValue && typeof dateValue.toDate === 'function') {
+    return dateValue.toDate().toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+  if (typeof dateValue === 'string') {
+    return new Date(dateValue).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+  return 'Tanggal tidak valid';
+};
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Riwayat Pengukuran</h2>
-        <div className="h-full">
-            <table className="w-full text-sm text-left">
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto text-sm text-left">
                 <thead className="bg-gray-50 text-gray-600 uppercase">
                     <tr>
-                        <th className="p-3">Tanggal</th>
-                        <th className="p-3">Berat (kg)</th>
-                        <th className="p-3">Tinggi (cm)</th>
+              <th className="px-4 py-2">Tanggal</th>
+              <th className="px-4 py-2">Berat (kg)</th>
+              <th className="px-4 py-2">Tinggi (cm)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {entries.slice().reverse().map(entry => ( // Tampilkan dari yang terbaru
+            {entries.slice().reverse().map((entry) => (
                         <tr key={entry.id} className="border-b">
-                            <td className="p-3">{entry.date}</td>
-                            <td className="p-3">{entry.weight}</td>
-                            <td className="p-3">{entry.height}</td>
+                <td className="px-4 py-2">{formatDate(entry.date)}</td>
+                <td className="px-4 py-2">{entry.weight}</td>
+                <td className="px-4 py-2">{entry.height}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -67,6 +78,7 @@ const HistoryTable = ({ entries }) => (
         </div>
     </div>
 );
+};
 
 
 export default function GrowthTrackerPage() {
@@ -129,6 +141,22 @@ export default function GrowthTrackerPage() {
       alert("Gagal menyimpan data pertumbuhan.");
     }
   };
+
+    const handleDeleteEntry = async (entryId) => {
+      if (!userProfile?.uid || !activeProfile?.profileId) return alert("Informasi profil tidak lengkap.");
+      
+      const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus catatan pertumbuhan ini?");
+      if (confirmDelete) {
+          try {
+              await deleteGrowthEntry(userProfile.uid, activeProfile.profileId, entryId);
+              alert("Data pertumbuhan berhasil dihapus.");
+          } catch (error) {
+              console.error("Gagal menghapus data:", error);
+              alert("Gagal menghapus data. Silakan coba lagi.");
+          }
+      }
+  };
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -282,7 +310,7 @@ export default function GrowthTrackerPage() {
                     {/* Kesimpulan AI & Riwayat */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <AISummaryCard summary={aiSummary} isLoading={isLoadingAi} />
-                        <HistoryTable entries={growthEntries} />
+                        <HistoryTable entries={growthEntries} onDelete={handleDeleteEntry} />
                     </div>
                 </>
             )}
