@@ -1,11 +1,7 @@
-import type { Metadata } from "next";
 import './globals.css';
-import { LayoutManager } from "./layoutManager"; 
+import { LayoutManager } from "./layoutManager";
 import { Manrope } from 'next/font/google';
-import { AuthProvider } from "../context/AuthContext";
 import { Providers } from "./providers";
-import { Head } from 'next/document'
-
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -14,7 +10,7 @@ const manrope = Manrope({
   display: 'swap'
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Asuh Kembang - Panduan Nutrisi untuk Ibu Hamil dan Menyusui",
   description: "Aplikasi web untuk membantu ibu hamil dan menyusui memantau asupan nutrisi harian mereka.",
   icons: {
@@ -22,11 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }) {
   return (
     <html lang="id" className={manrope.variable} style={{ scrollBehavior: 'smooth' }}>
       <head>

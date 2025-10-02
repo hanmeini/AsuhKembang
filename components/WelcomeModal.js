@@ -17,6 +17,7 @@ const WelcomeModal = () => {
         <Image 
             src="/images/broco-maskot.png" 
             alt="Maskot Brocco" 
+            priority
             width={120} 
             height={120}
             className="mx-auto"
