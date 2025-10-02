@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#ignore healtier.json
+healthier-4bf0a-firebase-adminsdk-fbsvc-645e685c4a
+
+#ignore firebase files
+lib/firebase/
+

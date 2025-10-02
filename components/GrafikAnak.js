@@ -113,4 +113,3 @@ const GrowthChart = ({ childData, childBirthDate }) => {
 };
 
 export default GrowthChart;
-

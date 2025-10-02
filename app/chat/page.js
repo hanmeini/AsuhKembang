@@ -131,9 +131,11 @@ export default function ChatPage() {
         }
     }, [activeChat?.id]);
     
+
     const handleSendMessage = async (message) => {
-        if (!message.trim() || isLoading) return;
         
+        if (!String(message).trim() || isLoading) return;
+
         let currentChatId = activeChat?.id || null;
         let currentMessages = activeChat?.messages || [];
         

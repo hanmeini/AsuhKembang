@@ -19,7 +19,6 @@ const cleanAndParseNumber = (value) => {
   return 0;
 };
 
-// ================== PROMPT REKOMENDASI YANG LEBIH CERDAS ==================
 const createRecommendationPrompt = (profile, foodName, nutrition) => {
   let context = "seseorang yang peduli kesehatan";
   let specificNeeds = "";

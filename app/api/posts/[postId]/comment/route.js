@@ -1,41 +1,55 @@
 import { NextResponse } from 'next/server';
 import admin from '../../../../../lib/firebaseAdmin';
-import { FieldValue } from 'firebase-admin/firestore';
 
-// PERBAIKAN: Mengubah cara parameter diakses untuk kompatibilitas
-export async function POST(request, context) {
-    try {
-        const { userId, content, authorName, authorAvatar } = await request.json();
-        
-        // PERBAIKAN: Mengambil postId dari context.params
-        const { postId } = context.params; 
-        
-        const db = admin.firestore();
-        
-        // Menargetkan dokumen postingan utama dan sub-koleksi komentarnya
-        const postRef = db.collection('posts').doc(postId);
-        const commentsRef = postRef.collection('comments');
+export async function DELETE(request, context) {
+  try {
+    // ✅ params harus di-await
+    const { postId } = await context.params;
 
-        if (!userId || !content || !authorName) {
-            return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
-        }
+    const db = admin.firestore();
 
-        // Aksi 1: Menambahkan dokumen komentar baru di dalam sub-koleksi
-        await commentsRef.add({
-            authorId: userId,
-            author: { name: authorName, avatar: authorAvatar || null },
-            content,
-            createdAt: FieldValue.serverTimestamp()
-        });
-        await postRef.update({
-            commentCount: FieldValue.increment(1)
-        });
+    // ✅ Ambil userId dari body request
+    const { userId } = await request.json();
 
-        return NextResponse.json({ success: true, message: 'Komentar berhasil ditambahkan.' });
-
-    } catch (error) {
-        console.error('Error saat menambah komentar:', error);
-        return NextResponse.json({ error: 'Gagal menambah komentar.' }, { status: 500 });
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'UserId wajib dikirim.' },
+        { status: 400 }
+      );
     }
-}
 
+    const postRef = db.collection('posts').doc(postId);
+    const postDoc = await postRef.get();
+
+    if (!postDoc.exists) {
+      return NextResponse.json(
+        { error: 'Postingan tidak ditemukan.' },
+        { status: 404 }
+      );
+    }
+
+    const postData = postDoc.data();
+
+    // ✅ Cek author
+    if (postData.authorId !== userId) {
+      return NextResponse.json(
+        { error: 'Anda tidak memiliki izin untuk menghapus postingan ini.' },
+        { status: 403 }
+      );
+    }
+
+    // ✅ Hapus postingan
+    await postRef.delete();
+
+    return NextResponse.json({
+      success: true,
+      message: 'Postingan berhasil dihapus.',
+    });
+  } catch (error) {
+    console.error('Error saat menghapus postingan:', error);
+    return NextResponse.json(
+      { error: 'Gagal menghapus postingan.' },
+      { status: 500 }
+    );
+  }
+}

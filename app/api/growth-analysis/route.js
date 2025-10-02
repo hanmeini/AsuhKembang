@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Fungsi untuk menyederhanakan data pertumbuhan menjadi teks
 const formatGrowthDataForAI = (entries) => {
   if (!entries || entries.length === 0) return "Belum ada data pertumbuhan.";
   return entries.map(entry => 
@@ -19,7 +18,6 @@ export async function POST(request) {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // PERBAIKAN: Gunakan generationConfig di sini untuk hasil yang lebih andal
     const model = genAI.getGenerativeModel({ 
         model: 'gemini-2.0-flash',
         generationConfig: {
@@ -51,7 +49,6 @@ export async function POST(request) {
     const response = await result.response;
     if (!response) throw new Error("Gagal mendapatkan respons dari AI.");
 
-    // PERBAIKAN: Membersihkan respons sebelum parsing (sebagai lapisan pengaman tambahan)
     const rawText = response.text();
     const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     const data = JSON.parse(cleanedText);

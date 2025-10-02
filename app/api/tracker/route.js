@@ -3,8 +3,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const db = admin.firestore()
 import admin from '../../../lib/firebaseAdmin';
 
-
-// Fungsi untuk membuat prompt AI yang dinamis
 const createPrompts = (week, dailyInputs) => {
     const generalInfoPrompt = `
         Anda adalah seorang ahli kandungan. Berikan informasi untuk kehamilan minggu ke-${week}.
@@ -30,7 +28,6 @@ const createPrompts = (week, dailyInputs) => {
 };
 
 export async function POST(request) {
-  // Menerima semua data dari form di frontend
   const { userId, profileId, week, dailyInputs } = await request.json(); 
   const db = admin.firestore();
 
@@ -44,34 +41,27 @@ export async function POST(request) {
 
     const { generalInfoPrompt, summaryPrompt } = createPrompts(week, dailyInputs);
 
-    // --- Panggilan AI #1: Informasi Umum Mingguan ---
     console.log("Meminta informasi umum untuk minggu ke-", week);
     const generalInfoResultRaw = await model.generateContent(generalInfoPrompt);
     const generalInfoResponse = await generalInfoResultRaw.response;
-    // Tambahkan JSON Mode untuk memastikan output valid
     const generalInfo = JSON.parse(generalInfoResponse.text().replace(/```json/g, '').replace(/```/g, '').trim());
-
-    // --- Panggilan AI #2: Rangkuman Personal ---
     console.log("Meminta rangkuman personal...");
     const summaryResultRaw = await model.generateContent(summaryPrompt);
     const summaryResponse = await summaryResultRaw.response;
     const summaryText = summaryResponse.text();
-
-    // --- Gabungkan Semua Data untuk Disimpan ---
     const newJournalEntry = {
         userId,
         profileId,
         week: Number(week),
         date: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}),
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
-        dailyInputs: dailyInputs, // Data dari pengguna
+        dailyInputs: dailyInputs,
         result: {
-            ...generalInfo, // Data dari AI #1
-            kesimpulan_ai: summaryText.trim(), // Data dari AI #2
+            ...generalInfo,
+            kesimpulan_ai: summaryText.trim(), 
         }
     };
     
-    // Simpan ke sub-koleksi 'journals' di dalam profil pengguna
     const docRef = await db.collection('users').doc(userId).collection('profiles').doc(profileId).collection('journals').add(newJournalEntry);
     
     console.log("Jurnal baru berhasil disimpan dengan ID: ", docRef.id);

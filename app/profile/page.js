@@ -6,14 +6,14 @@ import Sidebar from '../../components/Sidebar';
 import { useAuth } from '../../context/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase'
-import { getAuth, updateProfile } from "firebase/auth";
+import { getAuth, updateProfile, signOut } from "firebase/auth";
 import ProfileModal from '../../components/profileModal';
 import BottomNavBar from '../../components/BottomNav';
 import FloatingChatButton from '../../components/FloatingChatButton';
-import { FaTimes, FaCamera, FaUserCircle, FaPen } from 'react-icons/fa';
+import { FaUserCircle, FaPen, FaSignOutAlt } from 'react-icons/fa';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-// Card Sub-Profil
 const ProfileCard = ({ profile, onEdit }) => (
   <div className="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between hover:shadow-lg transition-shadow">
     <div className="flex items-center gap-4">
@@ -40,8 +40,6 @@ const ProfileCard = ({ profile, onEdit }) => (
 export default function ProfilePage() {
   const { userProfile, refreshUserProfile } = useAuth();
   const [isSidebarExpanded, setSidebarExpanded] = useState(false);
-  
-  // State untuk form
   const [displayName, setDisplayName] = useState('');
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
@@ -49,15 +47,12 @@ export default function ProfilePage() {
   const [gender, setGender] = useState('Wanita');
   const [activityLevel, setActivityLevel] = useState('Ringan');
   const [isLoading, setIsLoading] = useState(false);
-
-  // State untuk modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState(null);
-
-  // State untuk foto profil
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const fileInputRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (userProfile) {
@@ -71,7 +66,6 @@ export default function ProfilePage() {
     }
   }, [userProfile]);
 
-  // Fungsi ini HANYA memilih file dan menampilkan pratinjau (sudah benar)
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -80,7 +74,6 @@ export default function ProfilePage() {
     }
   };
 
-  // ================== FUNGSI PENYIMPANAN UTAMA (DIPERBARUI) ==================
 const handleSaveAllChanges = async () => {
   if (!userProfile) return;
   setIsLoading(true);
@@ -88,7 +81,6 @@ const handleSaveAllChanges = async () => {
   try {
     let updatedPhotoURL = userProfile.photoURL;
 
-    // --- Langkah 1: Upload foto baru ke Cloudinary (jika ada) ---
     if (photoFile) {
       try {
         const formData = new FormData();
@@ -112,7 +104,6 @@ const handleSaveAllChanges = async () => {
       }
     }
 
-    // --- Langkah 2: Update di Firebase Authentication ---
     try {
       const auth = getAuth();
       if (!auth.currentUser) throw new Error("User tidak terautentikasi.");
@@ -127,7 +118,6 @@ const handleSaveAllChanges = async () => {
       throw new Error(`Gagal memperbarui profil autentikasi: ${authError.message}`);
     }
 
-    // --- Langkah 3: Update dokumen Firestore ---
     try {
       const userDocRef = doc(db, "users", userProfile.uid);
       await updateDoc(userDocRef, {
@@ -145,10 +135,7 @@ const handleSaveAllChanges = async () => {
       throw new Error(`Gagal memperbarui data di database: ${firestoreError.message}`);
     }
 
-    // --- Langkah 4: Refresh data UI ---
     await refreshUserProfile();
-
-    // --- Langkah 5: Reset & Notifikasi ---
     setPhotoFile(null);
 
   } catch (error) {
@@ -159,20 +146,16 @@ const handleSaveAllChanges = async () => {
   }
 };
 
-
-  // Tambah sub-profil
   const handleAddNewSubProfile = () => {
     setEditingProfile(null);
     setIsModalOpen(true);
   };
 
-  // Edit sub-profil
   const handleEditSubProfile = (profile) => {
     setEditingProfile(profile);
     setIsModalOpen(true);
   };
 
-  // Simpan sub-profil
   const handleSaveSubProfile = async (profileData) => {
     if (!userProfile) return;
 
@@ -202,6 +185,17 @@ const handleSaveAllChanges = async () => {
     }
   };
 
+  const handleLogout = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error('Gagal keluar:', error);
+      alert('Gagal keluar. Silakan coba lagi.');
+    }
+  };
+
   return (
     <AuthGuard>
       {isModalOpen && (
@@ -213,25 +207,31 @@ const handleSaveAllChanges = async () => {
       )}
 
       <div className="flex min-h-screen bg-gray-50">
-        {/* Sidebar */}
         <Sidebar
           isExpanded={isSidebarExpanded}
           onMouseEnter={() => setSidebarExpanded(true)}
           onMouseLeave={() => setSidebarExpanded(false)}
         />
 
-        {/* Main Content */}
         <main
           className={`flex-1 transition-all duration-300 pb-20 ease-in-out ${
             isSidebarExpanded ? 'md:pl-[17.5rem]' : 'md:pl-[6.5rem]'
           }`}
         >
           <div className="p-6 md:p-10 max-w-4xl mx-auto space-y-12">
-            {/* Sub-Profil */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-6">
-                Kelola Sub-Profil
-              </h1>
+              <div className='flex flex-row justify-between items-center p-4'>
+                <h1 className="text-lg md:text-3xl font-bold text-gray-800">
+                  Kelola Sub-Profil
+                </h1>
+                <button 
+                  onClick={handleLogout}
+                  className="bg-white flex justify-center items-center gap-1 border-red-500 border hover:bg-red-400 hover:text-white text-red-400 font-semibold px-6 py-2 rounded-lg transition-colors duration-300"
+                        >
+                          <FaSignOutAlt/>
+                  Logout
+                </button>
+              </div>
               <div className="space-y-4">
                 {userProfile?.profiles?.map((profile) => (
                   <ProfileCard
@@ -249,11 +249,9 @@ const handleSaveAllChanges = async () => {
               </button>
             </div>
 
-            {/* Profil Utama */}
             <div className="bg-white md:p-8 rounded-2xl md:shadow-lg space-y-6">
               <h2 className="text-2xl font-bold mb-4">Profil Saya</h2>
 
-              {/* Foto Profil */}
               <div className="flex items-center gap-6">
                     <div className="flex flex-col items-center gap-4">
                         <div className="relative w-24 h-24">
@@ -281,7 +279,6 @@ const handleSaveAllChanges = async () => {
                 </div>
               </div>
 
-              {/* Info Kesehatan */}
               <div>
                 <h3 className="text-xl font-bold mb-4">Informasi Kesehatan</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -357,21 +354,19 @@ const handleSaveAllChanges = async () => {
                 </div>
               </div>
 
-              {/* Tombol Simpan */}
-              <div className="pt-4 flex justify-start md:justify-end">
-                        <button 
-                          onClick={handleSaveAllChanges} 
-                          disabled={isLoading} 
-                          className="bg-teal-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-teal-700 disabled:bg-gray-400"
-                        >
-                            {isLoading ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
-                        </button>
+              <div className="pt-4 flex gap-2 md:justify-end items-center">
+                <button
+                  onClick={handleSaveAllChanges}
+                  disabled={isLoading}
+                  className="bg-teal-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-teal-700 disabled:bg-gray-400"
+                >
+                  {isLoading ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
+                </button>
               </div>
-            </div>
-          </div>
-        </main>
+        </div>
+      </div>
+      </main>
 
-        {/* Floating Chat + Bottom Nav */}
         <div className="fixed bottom-24 right-4 z-50 md:hidden">
           <FloatingChatButton />
         </div>

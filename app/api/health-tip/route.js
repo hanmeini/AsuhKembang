@@ -19,11 +19,9 @@ export async function POST(request) {
   }
 
   try {
-    // Ambil data pengguna untuk memberikan konteks pada AI
     const userDoc = await db.collection('users').doc(userId).get();
     const userData = userDoc.data();
     
-    // Buat prompt yang dinamis
     let context = "seseorang yang peduli kesehatan";
     if (userData?.pregnancyInfo?.currentTrimester) {
       context = `seorang ibu hamil di trimester ke-${userData.pregnancyInfo.currentTrimester}`;
