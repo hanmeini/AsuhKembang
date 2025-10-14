@@ -509,6 +509,8 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
               </div>
             </Link>
 
+            <DailyMissionWidget/>
+
             {/* 2. Aktivitas Terakhir (Scroll Horizontal) */}
               <div className='p-2 md:p-0'>
                 <h3 className="text-md md:text-xl font-bold text-gray-700 mb-4">Aktivitas Terakhir</h3>

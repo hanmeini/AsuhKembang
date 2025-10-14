@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import admin from '../../../lib/firebaseAdmin';
 
+// 🧩 Fungsi bantu: ubah URL gambar jadi format base64 untuk dikirim ke Gemini
 async function urlToGenerativePart(url, mimeType) {
   const response = await fetch(url).then(res => res.arrayBuffer());
   const buffer = Buffer.from(response).toString('base64');
   return { inlineData: { data: buffer, mimeType } };
 }
 
+// 🧩 Bersihkan nilai nutrisi (pastikan angka bulat)
 const cleanAndParseNumber = (value) => {
   if (typeof value === 'number') return Math.round(value);
   if (typeof value === 'string') {
@@ -17,6 +19,7 @@ const cleanAndParseNumber = (value) => {
   return 0;
 };
 
+// 🧩 Buat prompt untuk rekomendasi nutrisi personal
 const createRecommendationPrompt = (profile, foodName, nutrition) => {
   let context = "seseorang yang peduli kesehatan";
   let specificNeeds = "";
@@ -38,7 +41,7 @@ const createRecommendationPrompt = (profile, foodName, nutrition) => {
       - Apakah kandungan Gula (${nutrition.sugar} g) dan Garam/Natrium (${nutrition.sodium} mg) sesuai untuk anak-anak?
       - Jika makanan ini mengandung alergen yang umum seperti kacang, berikan peringatan.
     `;
-  } else if (profile.type === 'general') {
+  } else {
     context = `seorang dewasa`;
     specificNeeds = `Fokus pada keseimbangan gizi secara umum, terutama kandungan gula dan natrium. Berikan tips praktis.`;
   }
@@ -50,7 +53,7 @@ const createRecommendationPrompt = (profile, foodName, nutrition) => {
   `;
 };
 
-// Fungsi untuk cek apakah hasil AI tidak relevan dengan makanan
+// 🧩 Deteksi jika gambar bukan makanan
 function isNotFood(displayName, bahan) {
   const lowerName = displayName.toLowerCase();
   const kataNonMakanan = [
@@ -75,10 +78,12 @@ export async function POST(request) {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const visionModel = genAI.getGenerativeModel({
+      // bisa ubah ke "gemini-1.5-flash" jika error 404
       model: 'gemini-2.0-flash',
       generationConfig: { responseMimeType: "application/json" },
     });
 
+    // 🧠 PROMPT untuk analisis gizi berbasis gambar
     const visionAndNutritionPrompt = `
       Analisis gambar makanan ini secara mendalam sebagai seorang ahli gizi.
       Struktur JSON harus seperti ini:
@@ -102,9 +107,11 @@ export async function POST(request) {
 
     const imagePart = await urlToGenerativePart(imageUrl, 'image/jpeg');
     const visionResultRaw = await visionModel.generateContent([visionAndNutritionPrompt, imagePart]);
+
+    // Parsing hasil Gemini Vision
     const visionResult = JSON.parse(visionResultRaw.response.text());
 
-    // ❗ Validasi jika bukan makanan atau tidak ada bahan
+    // 🧩 Cek jika bukan makanan
     if (!visionResult.display_name || isNotFood(visionResult.display_name, visionResult.bahan_terdeteksi)) {
       const errorResult = {
         userId,
@@ -119,7 +126,6 @@ export async function POST(request) {
         recommendation: "Gambar tidak berisi makanan yang dapat dikenali. Silakan coba lagi dengan gambar yang lebih jelas."
       };
 
-      // Simpan error result ke Firestore juga kalau mau tracking
       const docRef = await db.collection('scans').add({
         ...errorResult,
         timestamp: admin.firestore.FieldValue.serverTimestamp()
@@ -128,12 +134,8 @@ export async function POST(request) {
       return NextResponse.json({ ...errorResult, id: docRef.id });
     }
 
+    // --- 🧮 BERSIHKAN NILAI NUTRISI ---
     const totalNutritionEstimateRaw = visionResult.total_estimasi_nutrisi;
-    const textModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-    const recommendationPrompt = createRecommendationPrompt(activeProfile, visionResult.display_name, totalNutritionEstimateRaw);
-    const recommendationResultRaw = await textModel.generateContent(recommendationPrompt);
-    const recommendationText = recommendationResultRaw.response.text();
-
     const cleanNutritionData = {
       calories: cleanAndParseNumber(totalNutritionEstimateRaw.calories),
       protein: cleanAndParseNumber(totalNutritionEstimateRaw.protein),
@@ -145,6 +147,13 @@ export async function POST(request) {
       folic_acid: cleanAndParseNumber(totalNutritionEstimateRaw.folic_acid),
     };
 
+    // --- 💬 Rekomendasi AI berdasarkan profil ---
+    const textModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const recommendationPrompt = createRecommendationPrompt(activeProfile, visionResult.display_name, totalNutritionEstimateRaw);
+    const recommendationResultRaw = await textModel.generateContent(recommendationPrompt);
+    const recommendationText = recommendationResultRaw.response.text().trim();
+
+    // --- 🍼 Hitung usia kehamilan (jika profil hamil) ---
     let pregnancyWeek = null;
     if (activeProfile.type === 'pregnant' && activeProfile.dueDate) {
       const dueDate = typeof activeProfile.dueDate.toDate === 'function' ? activeProfile.dueDate.toDate() : new Date(activeProfile.dueDate);
@@ -156,7 +165,8 @@ export async function POST(request) {
         pregnancyWeek = weekNumber;
       }
     }
-    
+
+    // --- 🧩 Simpan hasil scan ---
     const finalResult = {
       userId,
       profileId: activeProfile.profileId,
@@ -168,15 +178,72 @@ export async function POST(request) {
         bahan_terdeteksi: visionResult.bahan_terdeteksi || [],
       },
       nutritionData: cleanNutritionData,
-      recommendation: recommendationText.trim(),
+      recommendation: recommendationText,
     };
 
     const docRef = await db.collection('scans').add(finalResult);
-    return NextResponse.json({ ...finalResult, id: docRef.id, timestamp: new Date().toISOString() });
+
+    // --- 🏆 XP & Misi Harian ---
+    let earnedXp = 10; // XP dasar
+    if (cleanNutritionData.protein > cleanNutritionData.fat) {
+      earnedXp += 5; // bonus “pilihan sehat”
+    }
+
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
+      xp: admin.firestore.FieldValue.increment(earnedXp)
+    });
+
+    // Cek & update misi harian
+    const today = new Date().toISOString().split('T')[0];
+    const missionRef = userRef.collection('dailyMissions').doc(today);
+    const missionDoc = await missionRef.get();
+    const missionData = missionDoc.exists ? missionDoc.data() : {};
+
+    // Ambil semua scan hari ini
+    const scansSnapshot = await db.collection('scans')
+      .where('userId', '==', userId)
+      .where('timestamp', '>=', new Date(today))
+      .get();
+
+    const dailyTotals = scansSnapshot.docs.reduce((acc, doc) => {
+      const data = doc.data().nutritionData;
+      acc.protein += data?.protein || 0;
+      acc.iron += data?.iron || 0;
+      return acc;
+    }, { protein: 0, iron: 0 });
+
+    // Target sederhana (bisa dikembangkan)
+    const proteinTarget = 75;
+    const ironTarget = 18;
+
+    let missionXp = 0;
+    const updates = {};
+
+    if (!missionData.proteinAchieved && dailyTotals.protein >= proteinTarget) {
+      missionXp += 15;
+      updates.proteinAchieved = true;
+    }
+
+    if (!missionData.ironAchieved && dailyTotals.iron >= ironTarget) {
+      missionXp += 15;
+      updates.ironAchieved = true;
+    }
+
+    if (missionXp > 0) {
+      await userRef.update({ xp: admin.firestore.FieldValue.increment(missionXp) });
+      await missionRef.set(updates, { merge: true });
+    }
+
+    // ✅ Kembalikan hasil akhir
+    return NextResponse.json({
+      ...finalResult,
+      id: docRef.id,
+      timestamp: new Date().toISOString()
+    });
 
   } catch (error) {
     console.error('Error in API route:', error);
     return NextResponse.json({ error: 'Terjadi kesalahan saat menganalisis gambar.' }, { status: 500 });
   }
 }
-
