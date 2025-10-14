@@ -13,5 +13,5 @@ body {
   background-color: #ffffff;
   scroll-behavior: smooth;
   overflow-x: hidden;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-jakarta), sans-serif;
 }

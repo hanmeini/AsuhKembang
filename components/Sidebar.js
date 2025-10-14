@@ -6,18 +6,26 @@ import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import Image from 'next/image';
 import { useChat } from '../context/ChatContext';
+import { usePathname } from 'next/navigation';
 
-const SidebarLink = ({ href, icon, text, expanded }) => (
-  <Link 
-    href={href} 
-    className="flex items-center space-x-4 text-gray-700 p-3 rounded-lg hover:bg-teal-50 transition-colors"
-  >
-    <div className="flex-shrink-0">{icon}</div>
-    <span className={`font-medium whitespace-nowrap transition-opacity duration-200 ${expanded ? "opacity-100" : "opacity-0"}`}>
-      {text}
-    </span>
-  </Link>
-);
+const SidebarLink = ({ href, icon, text, expanded }) => {
+  const pathname = usePathname(); 
+  const isActive = pathname === href;
+  return(
+    <Link 
+      href={href} 
+      className={`flex items-center space-x-4 p-3 rounded-lg transition-colors duration-200 ${
+        isActive 
+          ? 'bg-teal-100 text-teal-700 font-bold'
+          : 'text-gray-700 font-medium hover:bg-teal-50' 
+      }`}
+    >
+      <div className="flex-shrink-0">{icon}</div>
+      <span className={`whitespace-nowrap transition-opacity duration-200 ${expanded ? "opacity-100" : "opacity-0"}`}>
+        {text}
+      </span>
+    </Link>
+)};
 
 const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave }) => {
   const { userProfile, logout } = useAuth(); 

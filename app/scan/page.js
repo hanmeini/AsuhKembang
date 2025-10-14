@@ -18,28 +18,47 @@ import { useRouter } from 'next/navigation';
 import WelcomeModal from '../../components/WelcomeModal';
 
 // Komponen kecil baru untuk menampilkan item di riwayat
-const HistoryItem = ({ scan, onClick, isActive }) => (
-  <button 
-    onClick={onClick} 
-    className={`w-full flex items-center justify-between p-3 rounded-lg border text-left transition-all duration-200
-               ${isActive ? 'bg-teal-50 border-teal-300 shadow-sm' : 'bg-gray-50 hover:bg-teal-50 hover:border-teal-200'}`}
-  >
-    <div className="flex items-center gap-3 overflow-hidden">
+const HistoryItem = ({ scan, onClick, isActive }) => {
+  const calories = scan.nutritionData?.calories; // gunakan optional chaining
+
+  return (
+    <button 
+      onClick={onClick} 
+      className={`w-full flex items-center justify-between p-3 rounded-lg border text-left transition-all duration-200
+                ${isActive ? 'bg-teal-50 border-teal-300 shadow-sm' : 'bg-gray-50 hover:bg-teal-50 hover:border-teal-200'}`}
+    >
+      <div className="flex items-center gap-3 overflow-hidden">
         <Image 
-            src={scan.imageUrl}
-            alt={scan.aiScanResult.display_name}
-            width={48}
-            height={48}
-            className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+          src={scan.imageUrl}
+          alt={scan.aiScanResult.display_name}
+          width={48}
+          height={48}
+          className="w-12 h-12 object-cover rounded-md flex-shrink-0"
         />
         <div className="flex-grow overflow-hidden">
-            <p className="text-sm font-semibold text-gray-800 truncate">{scan.aiScanResult.display_name}</p>
-            <p className="text-xs text-gray-500">{new Date(scan.timestamp?.toDate()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+          <p className="text-sm font-semibold text-gray-800 truncate">
+            {scan.aiScanResult.display_name}
+          </p>
+          <p className="text-xs text-gray-500">
+            {new Date(scan.timestamp?.toDate?.() ?? scan.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+          </p>
         </div>
-    </div>
-    <span className="text-sm font-bold text-teal-600 flex-shrink-0 ml-2">{Math.round(scan.nutritionData.calories)} kkal</span>
-  </button>
-);
+      </div>
+
+      {/* ✅ tampilkan kalori hanya kalau ada datanya */}
+      {calories !== undefined && calories !== null ? (
+        <span className="text-sm font-bold text-teal-600 flex-shrink-0 ml-2">
+          {Math.round(calories)} kkal
+        </span>
+      ) : (
+        <span className="text-xs text-gray-400 flex-shrink-0 ml-2">
+          Tidak ada data
+        </span>
+      )}
+    </button>
+  );
+};
+
 
 export default function ScanPage() {
   const { userProfile } = useAuth();

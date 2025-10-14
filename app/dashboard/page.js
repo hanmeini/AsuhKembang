@@ -21,6 +21,9 @@ import PregnancyInfo from '../../components/tespregnant';
 import FloatingChatButton from '../../components/FloatingChatButton';
 import NutritionChart from '../../components/NutritionChart';
 import WelcomeModal from '../../components/WelcomeModal';
+import { motion } from 'framer-motion';
+import HistoryItem from '../../components/Historyscan';
+import DailyMissionWidget from '../../components/DailyMissonWidget';
 
 
 const DashboardPage = () => {
@@ -42,6 +45,7 @@ const DashboardPage = () => {
   const [macroTargets, setMacroTargets] = useState({ protein: 150, carbs: 250, fat: 70 });
   const [currentWeek, setCurrentWeek] = useState(null);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const MotionLink = motion(Link);
 
   // Efek untuk memeriksa apakah pengguna baru (belum punya sub-profil)
   useEffect(() => {
@@ -269,24 +273,24 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
         onMouseLeave={() => setSidebarExpanded(false)}
       />
       <main className={`pb-24 md:pb-0 transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'md:pl-[17.5rem]' : 'md:pl-[6.5rem]'}`}>
-          <header className="flex justify-between items-center p-6 md:p-10">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Selamat Pagi, {userProfile?.name || 'Pengguna'}! 👋</h2>
+          <header className="flex items-start flex-col w-full p-6 md:p-10">
+              <div className='flex flex-row justify-between items-center w-full'>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Selamat Pagi, {userProfile?.name || 'Pengguna'}! 👋</h2>
+                {userProfile?.photoURL ? (
+                  <Image
+                    src={userProfile.photoURL}
+                    alt="Foto Profil"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover w-10 h-10 flex-shrink-0"
+                  />
+                ) : (
+                  <FaUserCircle size={40} className="text-gray-500 flex-shrink-0" />
+                )}
+              </div>
               <div className="mt-2">
                 <ProfileSelector profiles={userProfile?.profiles} activeProfile={activeProfile} onProfileChange={setActiveProfile} />
               </div>
-            </div>
-            {userProfile?.photoURL ? (
-              <Image
-                src={userProfile.photoURL}
-                alt="Foto Profil"
-                width={40}
-                height={40}
-                className="rounded-full object-cover w-10 h-10 flex-shrink-0"
-              />
-            ) : (
-              <FaUserCircle size={40} className="text-gray-500 flex-shrink-0" />
-            )}
           </header>
 
         {/* =======Laptop======== */}
@@ -304,26 +308,28 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
               </Link>
             </div>
 
+            <Link href="/resep" className="block group">
+              <div className="relative bg-white p-8 rounded-2xl shadow-lg flex items-center gap-6 overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
+                <Image src="/images/analisis-instan.jpg" width={100} height={100} alt="Ilustrasi Resep" className='rounded-md ' />
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">Dapur Komunitas</h2>
+                  <p className="mt-1 text-gray-600">Temukan ribuan resep MPASI dan makanan sehat yang dibagikan oleh para bunda dan divalidasi oleh ahli gizi.</p>
+                </div>
+                <span className="absolute top-4 right-4 text-xs font-semibold bg-pink-100 text-pink-700 px-3 py-1 rounded-full">BARU!</span>
+              </div>
+            </Link>
+
             <NutritionChart totals={totals} targets={targetsForWidget} />
+
+            <DailyMissionWidget/>
 
               {/* Aktivitas Terakhir */}
               <div className='p-2 md:p-0'>
                 <h3 className="text-md md:text-xl font-bold text-gray-700 mb-4">Aktivitas Terakhir</h3>
-                  <div className="space-y-3">
                   {todaysScans.length > 0? (
                     todaysScans.map(scan => (
-                      <div key={scan.id} className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Image 
-                              src={scan.imageUrl}
-                              alt={scan.aiScanResult?.display_name || 'Makanan'}
-                              width={40}
-                              height={40}
-                              className="w-15 h-15 object-cover rounded-md"
-                            />
-                            <span className='font-semibold truncate'>{scan.aiScanResult?.display_name || 'Makanan'}</span>
-                          </div>
-                        <span className="font-bold text-xs md:text-base  text-gray-600">{Math.round(scan.nutritionData?.calories || 0)} kkal</span>
+                      <div key={scan.id} className='space-y-3'>
+                        <HistoryItem scan={scan} />
                       </div>
                     ))
                   ) : (
@@ -331,7 +337,6 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
                     <p className="text-gray-500 text-sm">Belum ada makanan yang dipindai hari ini. <span className='font-bold text-orange-500'>Ayo mulai!</span></p>
                   </div>
                   )}
-                  </div>
               </div>
               
             {/* Tip Kesehatan */}
@@ -365,10 +370,12 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
               </div>
             </div>
             {/* Tips */}
-            <div className='flex justify-center items-start flex-col'>
-                <h3 className="font-bold text-gray-700 mb-2">💡 Tip Sehat Hari Ini dari <span className='text-orange-500'>Brocco</span></h3>
-                <p className="text-gray-600 italic">{healthTip}</p>
+            <div className='flex justify-center items-start flex-col p-2'>
+              <div className='rounded-lg h-auto bg-teal-50 border-l-4 border-teal-500 p-3'>
+                <h3 className="font-bold text-teal-800 mb-2">💡 Tip Sehat Hari Ini dari <span className='text-orange-500'>Brocco</span></h3>
+                <p className="text-teal-600 italic">{healthTip}</p>
               </div>
+            </div>
             </div>
             </div>
 
@@ -438,45 +445,78 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
             {/* Header */}
             <div>
               <h3 className="text-xl font-bold text-gray-700 mb-4">Akses Cepat</h3>
-              <div className="grid grid-cols-2 gap-4 mx-7">
-                <Link href='/scan' className="flex flex-col items-center justify-center py-8 bg-teal-500 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
+              <div className="flex overflow-x-auto gap-4 pb-4 px-2 snap-x">
+                <MotionLink 
+                  href='/scan' 
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  aria-label="Buka Halaman Scan"
+                  className="flex-shrink-0 snap-center w-[140px] flex flex-col items-center justify-center py-6 bg-teal-500 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
                   <IoScan size={24}/>
                   <span className="text-xs mt-2 leading-tight">Pindai Makanan</span>
-                </Link>
-                <Link href='/jurnal' className="flex flex-col items-center justify-center py-8 bg-pink-600 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
+                </MotionLink>
+                <MotionLink 
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  aria-label="Buka Halaman Jurnal"
+                  href='/jurnal' 
+                  className="flex-shrink-0 snap-center w-[140px] flex flex-col items-center justify-center py-6 bg-pink-600 text-white rounded-2xl text-center font-semibold hover:bg-pink-700 transition-colors shadow-md">
                   <IoJournal size={24} />
                   <span className="text-xs mt-2 leading-tight">Jurnal Harian</span>
-                </Link>
-                <Link href='/lacak' className="flex flex-col items-center justify-center p-8 bg-orange-500 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
+                </MotionLink>
+                <MotionLink 
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  aria-label="Buka Halaman Lacak"
+                  href='/lacak' 
+                  className="flex-shrink-0 snap-center w-[140px] flex flex-col items-center justify-center py-6 bg-orange-500 text-white rounded-2xl text-center font-semibold hover:bg-orange-600 transition-colors shadow-md">
                   <FaHeartbeat size={24} />
                   <span className="text-xs mt-2 leading-tight">Lacak Pertumbuhan</span>
-                </Link>
-                <Link href='/komunitas' className="flex flex-col items-center justify-center p-8 bg-orange-400 text-white rounded-2xl text-center font-semibold hover:bg-teal-600 transition-colors shadow-md">
+                </MotionLink>
+                <MotionLink 
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  aria-label="Buka Halaman Komunitas"
+                  href='/komunitas' 
+                  className="flex-shrink-0 snap-center w-[140px] flex flex-col items-center justify-center py-6 bg-orange-400 text-white rounded-2xl text-center font-semibold hover:bg-orange-500 transition-colors shadow-md">
                   <FaUsers size={24} />
                   <span className="text-xs mt-2 leading-tight">Komunitas</span>
-                </Link>   
+                </MotionLink>
               </div>
             </div>
+
+            {/* Dapur Komunitas */}
+            <Link href="/resep" className="block">
+              <div className="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4">
+                <Image 
+                  src="/images/analisis-instan.jpg" 
+                  width={60} 
+                  height={60} 
+                  alt="Ilustrasi Resep" 
+                  className="rounded-lg object-cover"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-gray-800">Dapur Komunitas</h3>
+                    <span className="text-xs font-semibold bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">BARU!</span>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">Jelajahi resep MPASI & makanan sehat dari para bunda</p>
+                </div>
+              </div>
+            </Link>
 
             {/* 2. Aktivitas Terakhir (Scroll Horizontal) */}
               <div className='p-2 md:p-0'>
                 <h3 className="text-md md:text-xl font-bold text-gray-700 mb-4">Aktivitas Terakhir</h3>
+
                   <div className="space-y-3">
                     {todaysScans.length > 0? (
                       todaysScans.map(scan => (
-                      <div key={scan.id} className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Image 
-                              src={scan.imageUrl}
-                              alt={scan.aiScanResult?.display_name || 'Makanan'}
-                              width={40}
-                              height={40}
-                              className="w-15 h-15 object-cover rounded-md"
-                            />
-                            <span className='font-semibold truncate'>{scan.aiScanResult?.display_name || 'Makanan'}</span>
-                          </div>
-                        <span className="font-bold text-xs md:text-base  text-gray-600">{Math.round(scan.nutritionData?.calories || 0)} kkal</span>
-                      </div>
+                        <HistoryItem key={scan.id} scan={scan} />
                     ))): (
                     <div className="flex flex-row items-center py-6 px-6 shadow-sm rounded-2xl">
                       <p className="text-gray-500 text-sm">Belum ada makanan yang dipindai hari ini. <span className='font-bold text-orange-500'>Ayo mulai!</span></p>
@@ -489,6 +529,7 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
             <MacroWidget totals={totals} targets={targetsForWidget} />
 
             {/* 3. Widget Interaktif */}
+            <h3 className="text-md font-bold text-gray-700 mb-4">Catatan minum air</h3>
             <div className="bg-white p-6 rounded-2xl shadow-sm">
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-3 text-blue-600"><IoWater /><span className="font-bold">Minum Air</span></div>
@@ -530,9 +571,9 @@ if (activeProfile?.type === "pregnant" && calculatedWeek) {
               </div>
             </div>
             {/* Tips */}
-            <div className='justify-center items-center'>
-                <h3 className="font-bold text-gray-700 mb-2">💡 Tip Sehat Hari Ini dari <span className='text-orange-500'>Brocco</span></h3>
-                <p className="text-gray-600 italic">{healthTip}</p>
+            <div className='justify-center items-center rounded-lg bg-teal-50 border-l-4 border-teal-500 p-3'>
+                <h3 className="font-bold text-teal-800 mb-2">💡 Tip Sehat Hari Ini dari <span className='text-orange-500'>Brocco</span></h3>
+                <p className="text-teal-600 italic">{healthTip}</p>
               </div>
             </div>
           </div>

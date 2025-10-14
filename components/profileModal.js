@@ -62,70 +62,133 @@ const ProfileModal = ({ onSave, onClose, initialData }) => {
           className="bg-white w-full max-w-7xl h-[90vh] md:ml-12 rounded-t-2xl shadow-xl flex flex-col"
         >
           {/* Header Modal */}
-          <div className="flex justify-between items-center p-4 border-b flex-shrink-0">
-            <h2 className="text-xl font-bold">{initialData ? 'Edit Profil' : 'Tambah Profil Baru'}</h2>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100"><FaTimes/></button>
+          <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 flex-shrink-0">
+            <h2 className="text-xl font-bold text-gray-800">{initialData ? 'Edit Profil' : 'Tambah Profil Baru'}</h2>
+            <button 
+              onClick={onClose} 
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <FaTimes className="text-gray-400 hover:text-gray-600"/>
+            </button>
           </div>
           
           {/* Konten Form (dibuat bisa di-scroll) */}
-          <div className="p-6 space-y-4 overflow-y-auto">
-            <div>
-              <label className="font-semibold text-sm">Tipe Profil</label>
-              <select value={type} onChange={e => setType(e.target.value)} className="w-full mt-1 p-2 border rounded-lg">
+          <div className="px-6 py-4 space-y-6 overflow-y-auto">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Tipe Profil</label>
+              <select 
+                value={type} 
+                onChange={e => setType(e.target.value)} 
+                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600"
+              >
                 <option value="pregnant">Ibu Hamil</option>
                 <option value="child">Anak</option>
                 <option value="general">Umum (Dewasa)</option>
               </select>
             </div>
-            <div>
-              <label className="font-semibold text-sm">Nama Profil</label>
-              <input type="text" placeholder="Contoh: Kehamilan Pertama / Budi" value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 p-2 border rounded-lg" />
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Nama Profil</label>
+              <input 
+                type="text" 
+                placeholder="Contoh: Kehamilan Pertama / Budi" 
+                value={name} 
+                onChange={e => setName(e.target.value)} 
+                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600 placeholder-gray-400" 
+              />
             </div>
 
             {type === 'child' && (
               <>
-                <div>
-                  <label className="font-semibold text-sm">Tanggal Lahir Anak</label>
-                  <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full mt-1 p-2 border rounded-lg" />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Tanggal Lahir Anak</label>
+                  <input 
+                    type="date" 
+                    value={date} 
+                    onChange={e => setDate(e.target.value)} 
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600" 
+                  />
                 </div>
-                <div className="p-4 border-t mt-4">
-                    <h3 className="font-semibold text-gray-700">Data Fisik Anak (Opsional)</h3>
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                        <div>
-                            <label className="text-xs">Tinggi (cm)</label>
-                            <input type="number" name="height" value={childHealthData.height} onChange={handleChildHealthChange} className="w-full mt-1 p-2 border rounded-lg" />
-                        </div>
-                        <div>
-                            <label className="text-xs">Berat (kg)</label>
-                            <input type="number" name="weight" value={childHealthData.weight} onChange={handleChildHealthChange} className="w-full mt-1 p-2 border rounded-lg" />
-                        </div>
-                        <div className="col-span-2">
-                             <label className="text-xs">Jenis Kelamin</label>
-                            <select name="gender" value={childHealthData.gender} onChange={handleChildHealthChange} className="w-full mt-1 p-2 border rounded-lg">
-                                <option>Pria</option>
-                                <option>Wanita</option>
-                            </select>
-                        </div>
+
+                <div className="p-6 bg-gray-50 rounded-2xl space-y-4">
+                  <h3 className="font-medium text-gray-700">Data Fisik Anak (Opsional)</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-600">Tinggi (cm)</label>
+                      <input 
+                        type="number" 
+                        name="height" 
+                        value={childHealthData.height} 
+                        onChange={handleChildHealthChange} 
+                        className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600" 
+                      />
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-600">Berat (kg)</label>
+                      <input 
+                        type="number" 
+                        name="weight" 
+                        value={childHealthData.weight} 
+                        onChange={handleChildHealthChange} 
+                        className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600" 
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-sm font-medium text-gray-600">Jenis Kelamin</label>
+                      <select 
+                        name="gender" 
+                        value={childHealthData.gender} 
+                        onChange={handleChildHealthChange} 
+                        className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600"
+                      >
+                        <option>Pria</option>
+                        <option>Wanita</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="font-semibold text-sm">Alergi (pisahkan dengan koma)</label>
-                  <input type="text" placeholder="Contoh: kacang, susu" value={allergies} onChange={e => setAllergies(e.target.value)} className="w-full mt-1 p-2 border rounded-lg" />
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Alergi (pisahkan dengan koma)</label>
+                  <input 
+                    type="text" 
+                    placeholder="Contoh: kacang, susu" 
+                    value={allergies} 
+                    onChange={e => setAllergies(e.target.value)} 
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600 placeholder-gray-400" 
+                  />
                 </div>
               </>
             )}
-             {type === 'pregnant' && (
-              <div>
-                <label className="font-semibold text-sm">Perkiraan Tanggal Lahir (HPL)</label>
-                <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full mt-1 p-2 border rounded-lg" />
+
+            {type === 'pregnant' && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Perkiraan Tanggal Lahir (HPL)</label>
+                <input 
+                  type="date" 
+                  value={date} 
+                  onChange={e => setDate(e.target.value)} 
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 transition-all outline-none text-gray-600" 
+                />
               </div>
             )}
           </div>
 
           {/* Footer Modal */}
-          <div className="mt-auto p-4 flex pb-30 md:pb-4 justify-start space-x-4 border-t">
-            <button onClick={handleSubmit} className="bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-teal-700">Simpan</button>
-            <button onClick={onClose} className="text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100">Batal</button>
+          <div className="mt-auto px-6 py-4 flex justify-end space-x-3 border-t border-gray-100 bg-gray-50">
+            <button 
+              onClick={onClose} 
+              className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-100 transition-colors"
+            >
+              Batal
+            </button>
+            <button 
+              onClick={handleSubmit} 
+              className="px-6 py-2.5 rounded-xl bg-teal-600 text-white font-medium hover:bg-teal-700 
+                       transition-all active:scale-95 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+            >
+              Simpan Profil
+            </button>
           </div>
         </motion.div>
       </motion.div>

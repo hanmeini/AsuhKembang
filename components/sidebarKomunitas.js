@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { FaHashtag, FaUserPlus, FaPlus,  FaCheck } from 'react-icons/fa';
+import Link from 'next/link';
 
 // Komponen untuk kartu "Tanya Ahli"
 const AskExpertCard = () => (
@@ -115,6 +116,16 @@ const CommunitySidebar = () => {
           })}
         </ul>
       </motion.div>
+      <Link href="/resep" className="block group">
+        <div className="relative bg-white p-8 rounded-2xl shadow-lg flex items-center gap-6 overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
+          <Image src="/images/analisis-instan.jpg" width={100} height={100} alt="Ilustrasi Resep" className='rounded-md ' />
+        <div>
+          <h2 className="text-xl font-bold text-gray-800">Dapur Komunitas</h2>
+          <p className="mt-1 text-sm text-gray-600">Temukan ribuan resep MPASI dan makanan sehat yang dibagikan oleh para bunda dan divalidasi oleh ahli gizi.</p>
+          </div>
+          <span className="absolute top-4 right-4 text-xs font-semibold bg-pink-100 text-pink-700 px-3 py-1 rounded-full">BARU!</span>
+        </div>
+      </Link>
     </motion.div>
   );
 };
