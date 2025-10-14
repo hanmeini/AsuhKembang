@@ -59,7 +59,7 @@ const ProfileModal = ({ onSave, onClose, initialData }) => {
           animate={{ y: "0%" }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="bg-white w-full max-w-7xl h-[90vh] md:ml-12 rounded-t-2xl shadow-xl flex flex-col"
+          className="bg-white w-full max-w-7xl h-[90vh] md:ml-12 rounded-t-2xl shadow-xl flex flex-col overflow-y-auto"
         >
           {/* Header Modal */}
           <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 flex-shrink-0">
@@ -73,7 +73,7 @@ const ProfileModal = ({ onSave, onClose, initialData }) => {
           </div>
           
           {/* Konten Form (dibuat bisa di-scroll) */}
-          <div className="px-6 py-4 space-y-6 overflow-y-auto">
+          <div className="px-6 py-4 space-y-6 overflow-y-auto max-h-[65vh] md:max-h-[70vh]">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Tipe Profil</label>
               <select 
@@ -172,23 +172,23 @@ const ProfileModal = ({ onSave, onClose, initialData }) => {
                 />
               </div>
             )}
-          </div>
 
-          {/* Footer Modal */}
-          <div className="mt-auto px-6 py-4 flex justify-end space-x-3 border-t border-gray-100 bg-gray-50">
-            <button 
-              onClick={onClose} 
-              className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-100 transition-colors"
-            >
-              Batal
-            </button>
-            <button 
-              onClick={handleSubmit} 
-              className="px-6 py-2.5 rounded-xl bg-teal-600 text-white font-medium hover:bg-teal-700 
-                       transition-all active:scale-95 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-            >
-              Simpan Profil
-            </button>
+            {/* Tombol Simpan & Batal langsung di bawah input */}
+            <div className="pt-4 flex justify-end gap-3">
+              <button 
+                onClick={onClose} 
+                className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-100 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handleSubmit} 
+                className="px-6 py-2.5 rounded-xl bg-teal-600 text-white font-medium hover:bg-teal-700 
+                         transition-all active:scale-95 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+              >
+                Simpan Profil
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
