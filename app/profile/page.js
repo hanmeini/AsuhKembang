@@ -33,7 +33,9 @@ const ProfileCard = ({ profile, onEdit, onDelete }) => (
         </p>
       </div>
     </div>
-    <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+    <div className="flex gap-3 transition-opacity
+      opacity-100
+      md:opacity-0 md:group-hover:opacity-100">
       <button 
         onClick={() => onEdit(profile)} 
         className="px-3 py-1 rounded-lg bg-teal-50 text-teal-600 text-sm font-medium 

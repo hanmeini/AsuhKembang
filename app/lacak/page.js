@@ -65,15 +65,22 @@ const HistoryTable = ({ entries, onDelete }) => {
               <th className="px-4 py-2">Tinggi (cm)</th>
                     </tr>
                 </thead>
-                <tbody>
-            {entries.slice().reverse().map((entry) => (
-                        <tr key={entry.id} className="border-b">
-                <td className="px-4 py-2">{formatDate(entry.date)}</td>
-                <td className="px-4 py-2">{entry.weight}</td>
-                <td className="px-4 py-2">{entry.height}</td>
-                        </tr>
-                    ))}
-                </tbody>
+        <tbody>
+      {entries.slice().reverse().map((entry) => (
+            <tr key={entry.id} className="border-b">
+        <td className="px-4 py-2">{formatDate(entry.date)}</td>
+        <td className="px-4 py-2">{entry.weight}</td>
+        <td className="px-4 py-2">{entry.height}</td>
+        <td className="px-4 py-2 w-28">
+          <button
+            onClick={() => onDelete(entry.id)}
+            className="text-sm px-3 py-1 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+            aria-label={`Hapus catatan ${formatDate(entry.date)}`}
+          >Hapus</button>
+        </td>
+            </tr>
+          ))}
+        </tbody>
             </table>
         </div>
     </div>
@@ -108,7 +115,20 @@ export default function GrowthTrackerPage() {
   useEffect(() => {
     if (userProfile?.uid && activeProfile?.profileId) {
       const unsubscribe = subscribeToGrowthEntries(userProfile.uid, activeProfile.profileId, (entries) => {
-        setGrowthEntries(entries);
+        // If there are no entries, and activeProfile has initial healthData, inject an initial entry
+        if ((!entries || entries.length === 0) && activeProfile?.healthData?.weight && activeProfile?.healthData?.height && activeProfile?.birthDate) {
+          const initialEntry = {
+            id: `initial_${activeProfile.profileId}`,
+            date: activeProfile.birthDate,
+            weight: activeProfile.healthData.weight,
+            height: activeProfile.healthData.height,
+            isInitialData: true,
+          };
+          const augmented = [initialEntry];
+          setGrowthEntries(augmented);
+        } else {
+          setGrowthEntries(entries);
+        }
       });
       return () => unsubscribe();
     }
@@ -118,10 +138,18 @@ export default function GrowthTrackerPage() {
   useEffect(() => {
     if (growthEntries.length > 0 && activeProfile) {
         setIsLoadingAi(true);
+        // Prepare entries for AI: convert Timestamp to ISO strings
+        const formattedEntries = growthEntries.map(e => ({
+          ...e,
+          date: e.date && typeof e.date.toDate === 'function' ? e.date.toDate().toISOString().split('T')[0] : (e.date || '')
+        }));
+
+        console.debug('Mengirim data ke AI:', formattedEntries);
+
         fetch('/api/growth-analysis', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ growthEntries, childProfile: activeProfile })
+            body: JSON.stringify({ growthEntries: formattedEntries, childProfile: activeProfile })
         })
         .then(res => res.json())
         .then(data => {
@@ -134,6 +162,28 @@ export default function GrowthTrackerPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!weight || !height || !date || !activeProfile) return alert("Harap lengkapi semua data.");
+
+    // Check if there are existing entries
+    if (growthEntries.length > 0) {
+      // Get the last entry date
+      const lastEntry = growthEntries.reduce((latest, entry) => {
+        const entryDate = entry.date && typeof entry.date.toDate === 'function' ? entry.date.toDate() : new Date(entry.date);
+        const latestDate = latest.date && typeof latest.date.toDate === 'function' ? latest.date.toDate() : new Date(latest.date);
+        return entryDate > latestDate ? entry : latest;
+      }, growthEntries[0]);
+
+      const lastEntryDate = lastEntry.date && typeof lastEntry.date.toDate === 'function' ? lastEntry.date.toDate() : new Date(lastEntry.date);
+      const selectedDate = new Date(date);
+
+      // Calculate difference in months
+      const monthDiff = (selectedDate.getFullYear() - lastEntryDate.getFullYear()) * 12 + 
+                       (selectedDate.getMonth() - lastEntryDate.getMonth());
+
+      if (monthDiff < 1) {
+        return alert("Anda hanya dapat menambahkan data sekali dalam sebulan. Silakan tunggu hingga bulan berikutnya.");
+      }
+    }
+
     try {
       await addGrowthEntry(userProfile.uid, activeProfile.profileId, { date, weight: Number(weight), height: Number(height) });
       setWeight(''); setHeight('');

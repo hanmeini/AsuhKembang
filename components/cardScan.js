@@ -5,6 +5,56 @@ import { FaFire, FaCarrot, FaDrumstickBite, FaTint, FaLeaf } from 'react-icons/f
 import { GiSaltShaker, GiSugarCane } from "react-icons/gi";
 import { AiFillGolden } from "react-icons/ai";
 import { useChat } from '../context/ChatContext';
+import { FaShoppingCart, FaLightbulb } from 'react-icons/fa';
+
+const AffiliateRecommendation = ({ scanResult }) => {
+  if (!scanResult) return null;
+
+  const nutrition = scanResult.nutritionData;
+  const isHealthy = nutrition && nutrition.protein > nutrition.sugar;
+  const mainIngredient = scanResult.aiScanResult.bahan_terdeteksi?.[0]?.nama_bahan;
+
+  const productLink = 'https://tokopedia.link/xyz'; 
+  const searchLink = `https://www.tokopedia.com/search?q=${encodeURIComponent(mainIngredient)}`;
+
+  return (
+    <div className="mt-8 border-t pt-6">
+      {isHealthy && mainIngredient ? (
+        <div className="bg-teal-50 p-4 rounded-lg text-left">
+          <h3 className="font-bold text-teal-800">Sempurnakan Gizi si Kecil!</h3>
+          <p className="text-sm text-teal-700 mt-1">
+            Bahan utama dalam makanan ini, **{mainIngredient}**, sangat bagus untuk pertumbuhan.
+          </p>
+          <a
+            href={searchLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-2 rounded-full hover:bg-teal-700 transition-transform ease-in-out"
+          >
+            <FaShoppingCart /> Cari {mainIngredient} Segar
+          </a>
+        </div>
+      ) : (
+        // Tampilan jika makanan kurang sehat atau sebagai rekomendasi umum
+        <div className="bg-yellow-50 p-4 rounded-lg text-center">
+          <h3 className="font-bold text-yellow-800">Cari Alternatif yang Lebih Sehat?</h3>
+          <p className="text-sm text-yellow-700 mt-1">
+            Lihat produk biskuit bayi rendah gula yang direkomendasikan oleh ahli gizi kami.
+          </p>
+          <a
+            href={productLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 bg-yellow-500 text-white font-semibold px-6 py-2 rounded-full hover:bg-yellow-600"
+          >
+            <FaLightbulb /> Lihat Produk Rekomendasi
+          </a>
+        </div>
+      )}
+    </div>
+  );
+};
+
 
 const NutritionItem = ({ icon, label, value }) => (
   <div className="flex items-center space-x-3 bg-gray-100 p-3 rounded-lg">
@@ -20,7 +70,6 @@ const ScanResultCard = ({ result }) => {
   const { openChatWithContext } = useChat();
   if (!result) return null;
 
-  // ✅ Gunakan optional chaining dan default value supaya tidak error
   const nutrition = result.nutritionData ?? {};
 
   return (
@@ -39,6 +88,7 @@ const ScanResultCard = ({ result }) => {
             <h3 className="font-bold text-teal-700">💡 Rekomendasi Brocco</h3>
             <p className="text-sm text-teal-600 mt-2">{result.recommendation ?? '-'}</p>
           </div>
+          <AffiliateRecommendation scanResult={result} />
         </div>
         <div className="space-y-4">
           <h3 className="text-xl font-bold mb-2">{result.aiScanResult?.display_name ?? '-'}</h3>

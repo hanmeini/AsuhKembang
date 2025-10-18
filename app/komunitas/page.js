@@ -271,8 +271,9 @@ export default function CommunityPage() {
           <div className="p-0 md:p-10">
             {/* Header */}
             <div className='flex flex-row justify-between items-center p-4'>
-                <div>
-                    <h1 className="text-xl md:text-3xl font-bold text-gray-800">Komunitas Healthier</h1>
+                <div className="text-xl items-center flex flex-row font-semibold text-gray-800">
+                    <Image src='/images/logo-asuh-kembang.png' width={40} height={40} alt='logo'/>
+                    <span className="ml-2 inline">Komunitas</span>
                 </div>
                 <div className="flex flex-row items-center gap-5 justify-center">
                       {userProfile?.photoURL ? (

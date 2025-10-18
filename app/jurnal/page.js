@@ -91,18 +91,6 @@ const JournalDetailView = ({ entry, onBack, userProfile, activeProfile }) => {
                         <h2 className="text-2xl font-bold text-gray-800">Rangkuman Minggu ke-{entry.week}</h2>
                         <p className="text-sm text-gray-500 mb-4">{entry.date}</p>
                     </div>
-                    <div className='flex flex-col'>
-                        {isVerified ? (
-                            <a href={`https://sepolia.etherscan.io/tx/${entry.transactionHash}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm bg-green-100 text-green-700 font-semibold px-3 py-1.5 rounded-full hover:bg-green-200">
-                                <FaShieldAlt /> Terverifikasi
-                            </a>
-                        ) : (
-                            <button onClick={handleVerify} disabled={isVerifying} className="flex items-center gap-2 text-sm bg-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-full hover:bg-gray-300 disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                <FaShieldAlt /> {isVerifying ? 'Memverifikasi...' : 'Verifikasi di Blockchain'}
-                            </button>
-                        )}
-                        {error && <p className="text-xs text-red-500 mt-1 text-right">{error}</p>}
-                    </div>
                 </div>
                 <div className="space-y-4">
                     <div className="flex flex-col items-start gap-4">

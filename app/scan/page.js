@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import AuthGuard from '../../context/AuthGuard';
 import Sidebar from '../../components/Sidebar';
 import { useAuth } from '../../context/AuthContext';
-import { FaCamera, FaFileUpload } from 'react-icons/fa';
+import { FaCamera, FaChevronLeft, FaFileUpload } from 'react-icons/fa';
 import ScanningAnimation from '../../components/scanAnimation'; 
 import ScanResultCard from '../../components/cardScan'; 
 import { subscribeToTodaysScans } from '../../lib/firestore'; 
@@ -243,7 +243,7 @@ const currentResult = result || selectedHistoryScan;
                 // Tampilan Hasil
                 <div className='relative overflow-visible'>
                   <button onClick={handleReset} className=" z-10 text-teal-500 font-semibold py-5 px-6 bg-white shadow-lg absolute -top-5 border-teal-500 left-2 rounded-full items-center md:hidden flex justify-center border-2 hover:bg-teal-700 transition-transform hover:scale-105">
-                    ⬅
+                    <FaChevronLeft />
                   </button>
                   <ScanResultCard result={currentResult} />
                   <div className="text-center mt-8">

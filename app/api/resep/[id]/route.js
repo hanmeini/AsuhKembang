@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import admin from '../../../../lib/firebaseAdmin';
 
 // Handler ini akan mengambil SATU resep berdasarkan ID-nya
-export async function GET(request, { params }) {
-    const { id } = params; // Mengambil ID dari URL
+export async function GET(request, context) {
+    const { id } = await context.params; 
     const db = admin.firestore();
 
     try {

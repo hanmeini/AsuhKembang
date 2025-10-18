@@ -7,7 +7,7 @@ import AuthGuard from '../../context/AuthGuard';
 import BottomNavBar from '../../components/BottomNav';
 import { FaPaperPlane, FaPlus, FaComments, FaBook, FaCode, FaCog, FaShare2 } from 'react-icons/fa';
 import Image from 'next/image';
-import { Video, Mic, Equal } from 'lucide-react';
+import { Video, Mic, Equal, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
 import TextareaAutosize from 'react-textarea-autosize';
 import { LayoutDashboard, MessageSquarePlus, MessageSquare, Menu, X } from 'lucide-react';
@@ -197,6 +197,13 @@ export default function ChatPage() {
                 />
                 
                 <main className="flex-1 flex flex-col transition-all overflow-y-auto duration-300 ease-in-out">
+                    <div className="absolute left-5 top-5 lg:left-auto lg:right-10 lg:top-10 z-50">
+                        <Link href='/upgrade' className='flex items-center gap-2 mr-4 md:mr-8 px-4 py-2 rounded-md text-sm text-gray-600 font-semibold bg-white shadow-md hover:shadow-lg transition'>
+                            <span>Upgrade to</span>
+                            <span className='bg-teal-500 rounded-md px-3 py-1 text-white'>Plus</span>
+                            <ArrowUp size={14} className="text-teal-600"/>
+                        </Link>
+                    </div>
                     <div className="flex-1 mb-24 flex flex-col items-center justify-between pb-10 p-2 md:p-2 w-full max-w-4xl mx-auto">
                         <div className="w-full flex-1 flex flex-col justify-center items-center overflow-hidden">
                             {hasMessages ? (

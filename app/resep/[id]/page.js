@@ -5,7 +5,7 @@ import AuthGuard from '../../../context/AuthGuard';
 import BottomNavBar from '../../../components/BottomNav';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaArrowLeft, FaLeaf, FaFire, FaRegClock } from 'react-icons/fa';
+import { FaArrowLeft, FaLeaf, FaFire, FaRegClock, FaShoppingCart } from 'react-icons/fa';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { motion } from 'framer-motion';
@@ -29,6 +29,14 @@ const RecipeContent = ({ recipe }) => (
                 <ul className="mt-4 space-y-2 list-disc list-inside text-gray-600">
                     {recipe.ingredients?.map(item => <li key={item}>{item}</li>)}
                 </ul>
+                <a 
+                    href={`https://www.sayurbox.com/search?q=${encodeURIComponent(recipe.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 w-full flex items-center justify-center gap-3 bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                    <FaShoppingCart /> Beli Semua Bahan di Sayurbox
+                </a>
             </div>
             <div>
                 <h2 className="text-xl font-bold text-gray-700">Cara Membuat</h2>

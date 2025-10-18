@@ -23,7 +23,8 @@ const PostCard = ({ post }) => {
   const [isDeleting, setIsDeleting] = useState(false); // State untuk loading/indikator hapus
   const [confirmDelete, setConfirmDelete] = useState(false); 
   const currentPost = post || defaultPost;
-  const postAuthorId = currentPost.author?.authorId || 'no-author-id'; 
+  // authorId may be stored at root (`authorId`) or nested under `author.authorId` depending on how it was saved
+  const postAuthorId = currentPost.authorId || currentPost.author?.authorId || 'no-author-id'; 
 
   // Listener real-time komentar
   useEffect(() => {
@@ -34,6 +35,20 @@ const PostCard = ({ post }) => {
       return () => unsubscribe();
     }
   }, [post.id, showComments]);
+
+  // Click-away listener to close menus when clicking outside
+  useEffect(() => {
+    const handleDocClick = (e) => {
+      const target = e.target;
+      // If click is not inside any open menu or a menu button, close menus
+      if (!target.closest('.postcard-menu-open') && !target.closest('.postcard-comment-menu-open') && !target.closest('.postcard-menu-button')) {
+        setOpenMenuId(null);
+        setOpenPostMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleDocClick);
+    return () => document.removeEventListener('mousedown', handleDocClick);
+  }, []);
 
   //hapus post
   const handleDeletePost = async () => {
@@ -126,7 +141,7 @@ const PostCard = ({ post }) => {
   const handleDeleteComment = async (commentId) => {
     if (!userProfile) return;
     try {
-      const res = await fetch(`/api/posts/${post.id}/comments/${commentId}`, {
+      const res = await fetch(`/api/posts/${post.id}/comment/${commentId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: userProfile.uid }),
@@ -159,21 +174,21 @@ const PostCard = ({ post }) => {
             {/* titik tiga */}
             {isPostOwner && (
               <div className="relative">
-                <button 
-                    onClick={() => setOpenPostMenu(!openPostMenu)}
-                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-                    disabled={isDeleting}
-                >
-                    {isDeleting ? '...' : <FaEllipsisV size={18} className="text-gray-500" />}
-                </button>
+        <button 
+          onClick={() => setOpenPostMenu(!openPostMenu)}
+          className="p-1 rounded-full hover:bg-gray-100 transition-colors postcard-menu-button"
+          disabled={isDeleting}
+        >
+          {isDeleting ? '...' : <BsThreeDotsVertical size={18} className="text-gray-500" />}
+        </button>
                 
-                {openPostMenu && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-10"
-                    >
+        {openPostMenu && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-10 postcard-menu-open"
+          >
                         <button 
                             onClick={() => setConfirmDelete(true)} 
                             className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
@@ -239,29 +254,29 @@ const PostCard = ({ post }) => {
                           <p><span className="font-bold">{comment.author.name}</span> {comment.content}</p>
                         </div>
 
-                      {/* Titik tiga */}
-                      {/* {userProfile?.uid === comment.authorId && (
-                        <div className="relative">
-                          <button
-                            onClick={() =>
-                              setOpenMenuId(openMenuId === comment.id ? null : comment.id)
-                            }
-                            className="p-1"
-                          >
-                            <BsThreeDotsVertical size={16} className="text-gray-500" />
-                          </button>
-                          {openMenuId === comment.id && (
-                            <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-md z-10">
-                              <button
-                                onClick={() => handleDeleteComment(comment.id)}
-                                className="w-full text-left px-3 py-1 text-sm text-red-500 hover:bg-gray-100"
-                              >
-                                Hapus
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )} */}
+                        {/* Three-dot menu for comment owner */}
+                        {userProfile?.uid === comment.authorId && (
+                          <div className="relative">
+                            <button
+                              onClick={() => setOpenMenuId(openMenuId === comment.id ? null : comment.id)}
+                              className="p-1"
+                              aria-label="Opsi komentar"
+                            >
+                              <BsThreeDotsVertical size={16} className="text-gray-500" />
+                            </button>
+
+                            {openMenuId === comment.id && (
+                              <div className="absolute right-0 mt-2 w-36 bg-white border rounded shadow-md z-10 postcard-comment-menu-open">
+                                <button
+                                  onClick={() => handleDeleteComment(comment.id)}
+                                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                                >
+                                  Hapus Komentar
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

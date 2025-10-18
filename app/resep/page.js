@@ -128,7 +128,7 @@ export default function RecipePage() {
                     <form onSubmit={handleSearch} className="relative">
                     <input 
                         type="text"
-                        placeholder="Cari nama destinasi impianmu..."
+                        placeholder="Cari resep bergizi..."
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                         className="bg-white w-full py-4 pl-6 pr-16 rounded-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-400"
