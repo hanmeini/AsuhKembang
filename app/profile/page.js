@@ -77,6 +77,7 @@ export default function ProfilePage() {
   const [gender, setGender] = useState('Wanita');
   const [activityLevel, setActivityLevel] = useState('Ringan');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
@@ -96,6 +97,12 @@ export default function ProfilePage() {
         setGender(hp.gender || 'Wanita'); 
         setActivityLevel(hp.activityLevel || 'Ringan');
       }
+      
+      // Show sub-profile modal if user has no profiles
+      if (!userProfile.profiles || userProfile.profiles.length === 0) {
+        setIsModalOpen(true);
+        setEditingProfile(null);
+      }
     }
   }, [userProfile]);
 
@@ -114,6 +121,7 @@ export default function ProfilePage() {
   const handleSaveAllChanges = async () => {
     if (!userProfile) return;
     setIsLoading(true);
+    setIsSaveLoading(true);
 
     try {
       let updatedPhotoURL = userProfile.photoURL;
@@ -161,6 +169,7 @@ export default function ProfilePage() {
       console.error(err);
     } finally {
       setIsLoading(false);
+      setIsSaveLoading(false);
     }
   };
 
@@ -414,13 +423,13 @@ export default function ProfilePage() {
               <div className="pt-6 flex justify-end">
                 <button
                   onClick={handleSaveAllChanges}
-                  disabled={isLoading}
+                  disabled={isLoading || isSaveLoading}
                   className="px-8 py-3 rounded-xl bg-teal-600 text-white font-medium 
                            hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed
                            transition-all active:scale-95 focus:ring-2 focus:ring-teal-500 
                            focus:ring-offset-2 flex items-center gap-2"
                 >
-                  {isLoading ? (
+                  {isSaveLoading ? (
                     <>
                       <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
