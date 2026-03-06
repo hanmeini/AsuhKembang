@@ -5,7 +5,14 @@ import { useState } from "react";
 import AuthGuard from "../../context/AuthGuard";
 import Sidebar from "../../components/Sidebar";
 import BottomNavBar from "../../components/BottomNav";
-import { FaCheckCircle, FaStar } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaStar,
+  FaRobot,
+  FaUtensils,
+  FaChartLine,
+  FaArrowRight,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,10 +26,17 @@ const FeatureItem = ({ text }) => (
   </li>
 );
 
+const PremiumFeature = ({ icon, text }) => (
+  <div className="flex items-center gap-4 p-3 bg-teal-50 rounded-xl">
+    <div className="text-teal-600 text-xl">{icon}</div>
+    <span className="text-gray-700 font-medium">{text}</span>
+  </div>
+);
+
 export default function UpgradePage() {
   const [isSidebarExpanded, setSidebarExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth(); // Gunakan context auth jika tersedia
+  const { userProfile } = useAuth(); // Gunakan context auth jika tersedia
 
   const handleSubscribeClick = async () => {
     setIsLoading(true);
@@ -33,8 +47,9 @@ export default function UpgradePage() {
         body: JSON.stringify({
           amount: 25000,
           productName: "AsuhKembang Plus",
-          customerEmail: user?.email || "",
-          customerName: user?.displayName || "Bunda AsuhKembang",
+          customerEmail: userProfile?.email || "",
+          customerName: userProfile?.displayName || "Bunda AsuhKembang",
+          userId: userProfile?.uid || null,
         }),
       });
 
@@ -90,34 +105,103 @@ export default function UpgradePage() {
             </motion.div>
 
             <motion.div
-              className="bg-white p-8 rounded-2xl shadow-lg mt-8 text-left space-y-4"
+              className="mt-8" // Added mt-8 here to match original spacing
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <h2 className="text-xl font-semibold mb-4">
-                Semua yang Anda dapatkan di Plus:
-              </h2>
-              <ul className="space-y-3 text-gray-700">
-                <FeatureItem text="Konsultasi AI Tanpa Batas dengan 'Brocco'" />
-                <FeatureItem text="Akses Penuh ke Seluruh Riwayat Scan Makanan" />
-                <FeatureItem text="Perencana Menu Makan Mingguan oleh AI" />
-                <FeatureItem text="Laporan Pertumbuhan Anak yang Mendalam (PDF)" />
-                <FeatureItem text="Dukungan Prioritas" />
-              </ul>
-              <div className="pt-6">
-                <button
-                  onClick={handleSubscribeClick}
-                  disabled={isLoading}
-                  className="w-full bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-teal-700 transition-transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isLoading ? (
-                    <AiOutlineLoading3Quarters className="animate-spin" />
-                  ) : null}
-                  {isLoading
-                    ? "Menghubungkan..."
-                    : "Berlangganan Sekarang (Rp 25.000/bulan)"}
-                </button>
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8">
+                <div className="bg-teal-600 p-8 text-white text-center">
+                  <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
+                    {userProfile?.isPremium
+                      ? "Status Member Bunda:"
+                      : "AsuhKembang Plus"}
+                  </h2>
+                  {userProfile?.isPremium && (
+                    <div className="mt-2 flex items-center justify-center gap-2 bg-amber-400 text-teal-900 font-black px-4 py-1 rounded-full text-sm">
+                      <FaStar /> MEMBER PLUS AKTIF
+                    </div>
+                  )}
+                  <p className="opacity-90 mt-2">
+                    Dukungan kecerdasan buatan terlengkap untuk si Kecil
+                  </p>
+                </div>
+
+                <div className="p-8">
+                  {userProfile?.isPremium ? (
+                    <div className="text-center py-4">
+                      <div className="text-teal-500 text-6xl mb-4 flex justify-center">
+                        <FaCheckCircle />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">
+                        Terima kasih atas dukungannya!
+                      </h3>
+                      <p className="text-gray-600 mb-8 lowercase italic">
+                        Bunda sudah terdaftar sebagai member premium.
+                      </p>
+                      <Link
+                        href="/dashboard"
+                        className="block w-full bg-teal-600 text-white font-bold py-4 rounded-xl hover:bg-teal-700 transition-all text-center"
+                      >
+                        Ke Dashboard Utama
+                      </Link>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-4 mb-8">
+                        <PremiumFeature
+                          icon={<FaRobot />}
+                          text="Chat Brocco AI Tanpa Batas"
+                        />
+                        <PremiumFeature
+                          icon={<FaUtensils />}
+                          text="Scan Nutrisi Makanan Lebih Akurat"
+                        />
+                        <PremiumFeature
+                          icon={<FaChartLine />}
+                          text="Lacak Grafik Pertumbuhan Premium"
+                        />
+                        <PremiumFeature
+                          icon={<FaStar />}
+                          text="Resep MPASI Eksklusif"
+                        />
+                      </div>
+
+                      <div className="text-center mb-8">
+                        <div className="text-sm text-gray-500 line-through">
+                          Rp 50.000 / bulan
+                        </div>
+                        <div className="text-4xl font-black text-gray-800">
+                          Rp 25.000
+                        </div>
+                        <div className="text-teal-600 font-bold">
+                          Harga Promo Lomba VibeCoding!
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleSubscribeClick}
+                        disabled={isLoading} // Changed from 'loading' to 'isLoading'
+                        className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-teal-200 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70"
+                      >
+                        {isLoading ? (
+                          <AiOutlineLoading3Quarters className="animate-spin text-2xl" />
+                        ) : (
+                          <>
+                            Berlangganan Sekarang <FaArrowRight />
+                          </>
+                        )}
+                      </button>
+
+                      <p className="text-[10px] text-gray-400 text-center mt-4 italic leading-tight">
+                        *Pembayaran via Sandbox Mayar.id. Setelah bayar, silakan
+                        klik tombol putih bertuliskan{" "}
+                        <strong>"go Asuh kembang"</strong> di bagian bawah struk
+                        sukses untuk kembali ke sini.
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>

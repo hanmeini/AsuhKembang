@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
-    const { amount, productName, customerEmail, customerName } =
+    const { amount, productName, customerEmail, customerName, userId } =
       await request.json();
 
     if (!process.env.MAYAR_API_KEY) {
@@ -49,11 +49,16 @@ export async function POST(request) {
         name: customerName || "Bunda AsuhKembang",
         email: customerEmail || "bunda@example.com",
         amount: amount || 25000,
-        description: `Langganan ${productName || "AsuhKembang Plus"}`,
-        mobile: "08123456789",
+        description: `Langganan ${productName || "AsuhKembang Plus"} - ${userId || ""}`,
+        mobile: "08123456789", // Kembali ke nomor sampel karena Mayar membatasi length 15
         redirect_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/upgrade/success`,
       }),
     });
+
+    console.log(
+      "Redirect URL dikirim ke Mayar:",
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/upgrade/success`,
+    );
 
     const responseText = await response.text();
     let data;
