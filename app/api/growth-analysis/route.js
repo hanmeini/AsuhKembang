@@ -1,30 +1,33 @@
-import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const formatGrowthDataForAI = (entries) => {
   if (!entries || entries.length === 0) return "Belum ada data pertumbuhan.";
-  return entries.map(entry => 
-    `- Pada tanggal ${entry.date}: Berat ${entry.weight} kg, Tinggi ${entry.height} cm`
-  ).join('\n');
+  return entries
+    .map(
+      (entry) =>
+        `- Pada tanggal ${entry.date}: Berat ${entry.weight} kg, Tinggi ${entry.height} cm`,
+    )
+    .join("\n");
 };
 
 export async function POST(request) {
   const { growthEntries, childProfile } = await request.json();
 
   if (!growthEntries || !childProfile) {
-    return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+    return NextResponse.json({ error: "Data tidak lengkap." }, { status: 400 });
   }
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    const model = genAI.getGenerativeModel({ 
-        model: 'gemini-2.0-flash',
-        generationConfig: {
-            responseMimeType: "application/json",
-        },
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      },
     });
-    
+
     const formattedData = formatGrowthDataForAI(growthEntries);
 
     const prompt = `
@@ -50,14 +53,18 @@ export async function POST(request) {
     if (!response) throw new Error("Gagal mendapatkan respons dari AI.");
 
     const rawText = response.text();
-    const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const cleanedText = rawText
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
     const data = JSON.parse(cleanedText);
-    
-    return NextResponse.json(data);
 
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error di API Analisis Pertumbuhan:', error);
-    return NextResponse.json({ error: 'Gagal membuat kesimpulan.' }, { status: 500 });
+    console.error("Error di API Analisis Pertumbuhan:", error);
+    return NextResponse.json(
+      { error: "Gagal membuat kesimpulan." },
+      { status: 500 },
+    );
   }
 }
-

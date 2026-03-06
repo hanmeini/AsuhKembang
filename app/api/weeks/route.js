@@ -1,19 +1,20 @@
-import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(request) {
   const { week, totals, targets, profileType } = await request.json();
 
   if (!totals || !targets) {
-    return NextResponse.json({ error: 'Data tidak lengkap.' }, { status: 400 });
+    return NextResponse.json({ error: "Data tidak lengkap." }, { status: 400 });
   }
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const context = profileType === 'pregnant' ? 'seorang ibu hamil' : 'seseorang';
-    
+    const context =
+      profileType === "pregnant" ? "seorang ibu hamil" : "seseorang";
+
     const prompt = `
       Anda adalah "Brocco", seorang ahli gizi AI yang suportif.
       Seorang ${context} di minggu ke-${week} kehamilan memiliki ringkasan gizi mingguan sebagai berikut:
@@ -27,7 +28,9 @@ export async function POST(request) {
       }
     `;
 
-    const result = await model.generateContent(prompt, { responseMimeType: "application/json" });
+    const result = await model.generateContent(prompt, {
+      responseMimeType: "application/json",
+    });
     const response = await result.response;
 
     if (!response) {
@@ -36,9 +39,11 @@ export async function POST(request) {
 
     const data = JSON.parse(response.text());
     return NextResponse.json(data);
-
   } catch (error) {
-    console.error('Error di API Rangkuman Jurnal:', error);
-    return NextResponse.json({ error: 'Gagal membuat rangkuman.' }, { status: 500 });
+    console.error("Error di API Rangkuman Jurnal:", error);
+    return NextResponse.json(
+      { error: "Gagal membuat rangkuman." },
+      { status: 500 },
+    );
   }
 }
