@@ -12,16 +12,37 @@ export async function POST(request) {
       );
     }
 
-    // Panggil API Mayar.id untuk membuat payment link
-    // URL Headless Mayar menggunakan prefix /hl/v1
-    const endpoint = "https://api.mayar.id/hl/v1/payment/create";
+    // Tentukan endpoint berdasarkan kunci API
+    // Jika kunci mengandung 'sandbox' atau jika kita ingin mendukung portal .club
+    let endpoint = "https://api.mayar.id/hl/v1/payment/create";
+    const apiKey = process.env.MAYAR_API_KEY.trim();
+
+    // Deteksi token malformed (terpotong)
+    if (apiKey.includes("..")) {
+      return NextResponse.json(
+        {
+          error:
+            "Token Mayar Bunda sepertinya terpotong atau tidak lengkap (terdapat karakter ..). Silakan salin ulang kuncinya dengan teliti.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Jika menggunakan portal sandbox (web.mayar.club), gunakan endpoint sandbox
+    // Catatan: Biasanya kunci sandbox diawali sk_sandbox_, tapi jika user pakai JWT,
+    // kita beri pilihan atau coba deteksi.
+    if (apiKey.length > 100 && !apiKey.includes("sk_live")) {
+      // Asumsi: Jika token panjang (JWT) dan kita sedang testing di sandbox, gunakan endpoint club
+      // Bunda bisa menyesuaikan ini jika sudah pindah ke production .id
+      endpoint = "https://api.mayar.club/hl/v1/payment/create";
+    }
 
     console.log("Menghubungi Mayar di:", endpoint);
 
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.MAYAR_API_KEY.trim()}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
