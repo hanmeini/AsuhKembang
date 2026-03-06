@@ -44,6 +44,16 @@ const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave }) => {
   const { userProfile, logout } = useAuth();
   const { openChatWithContext } = useChat();
 
+  const [currentProfilePic, setCurrentProfilePic] = React.useState(
+    userProfile?.photoURL,
+  );
+  const fallbackAvatar =
+    "data:image/jpeg;base64,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";
+
+  React.useEffect(() => {
+    setCurrentProfilePic(userProfile?.photoURL);
+  }, [userProfile?.photoURL]);
+
   const userName = userProfile?.displayName || "Pengguna";
 
   return (
@@ -115,13 +125,14 @@ const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave }) => {
           href="/profile"
           className="flex p-2 hover:bg-gray-50 transition-colors duration-200 w-full rounded-lg items-center space-x-4"
         >
-          {userProfile?.photoURL ? (
+          {currentProfilePic ? (
             <Image
-              src={userProfile.photoURL}
+              src={currentProfilePic}
               alt="Foto Profil"
               width={40}
               height={40}
               className="rounded-full object-cover w-8 h-8 flex-shrink-0"
+              onError={() => setCurrentProfilePic(fallbackAvatar)}
             />
           ) : (
             <FaUserCircle size={40} className="text-gray-500 flex-shrink-0" />
