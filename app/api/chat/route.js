@@ -18,21 +18,8 @@ const createChatPrompt = (message, context) => {
       Anda adalah "Brocco", asisten kesehatan AI yang ramah, empatik, dan suportif khusus untuk ibu hamil dan anak.
       ${contextInfo}
       
-      TUGAS: Jawab pertanyaan pengguna dalam format JSON terstruktur agar tampilan aplikasi rapi. 
-      PENTING: Gunakan Bahasa Indonesia yang hangat. Jangan memberikan diagnosis medis.
-      
-      SCHEMA JSON:
-      {
-        "intro": "Kalimat pembuka yang hangat (misal: 'Hai Bunda! Senang sekali bisa membantu...')",
-        "segments": [
-          {
-            "title": "Judul poin informasi (misal: 'Protein Tanpa Lemak')",
-            "content": "Penjelasan singkat dan padat",
-            "examples": "Contoh makanan atau tips terkait"
-          }
-        ],
-        "outro": "Kalimat penutup atau penyemangat (misal: 'Semangat terus ya Bunda!')"
-      }
+      TUGAS: Jawab pertanyaan pengguna dengan bahasa Indonesia yang hangat, singkat, dan padat.
+      PENTING: Hanya jawab pertanyaan yang berkaitan dengan kesehatan, gizi, kehamilan, dan tumbuh kembang anak. Jika pertanyaan di luar tema tersebut, jawablah dengan sopan bahwa Anda hanya bisa membantu seputar kesehatan Bunda dan si Kecil. Jangan memberikan diagnosis medis.
       
       Pertanyaan Pengguna: "${message}"
     `;
@@ -54,9 +41,6 @@ export async function POST(request) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-      },
     });
 
     const chatHistoryForAI = history.map((msg) => ({
@@ -120,22 +104,10 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error di API Chat:", error);
 
-    const errorFallback = {
-      intro:
-        "Wah, Brocco sedang sangat sibuk melayani banyak Bunda hari ini! 😊",
-      segments: [
-        {
-          title: "Layanan Sedang Padat",
-          content:
-            "Fitur interaksi sedang mengalami antrean yang cukup panjang.",
-          examples: "Tingkatkan ke Plus untuk akses prioritas tanpa hambatan!",
-        },
-      ],
-      outro: "Ingin akses yang lebih lancar dan cepat?",
-      quotaExceeded: true,
-    };
+    const errorFallback =
+      "Wah, Brocco sedang sangat sibuk melayani banyak Bunda hari ini! 😊 Silakan coba lagi sebentar lagi ya Bunda, atau tingkatkan ke Plus untuk akses tanpa hambatan.";
     return NextResponse.json({
-      reply: JSON.stringify(errorFallback),
+      reply: errorFallback,
       chatId: chatId || null,
     });
   }
