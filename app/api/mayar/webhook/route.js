@@ -4,7 +4,6 @@ import admin from "../../../../lib/firebaseAdmin";
 export async function POST(request) {
   try {
     const body = await request.json();
-    console.log("Mayar Webhook Received:", JSON.stringify(body, null, 2));
 
     // Verifikasi status pembayaran dari Mayar
     // Struktur body Mayar biasanya: { event: 'payment.success', data: { status: 'success', mobile: 'USER_ID_DISINI', ... } }
@@ -43,7 +42,6 @@ export async function POST(request) {
         { merge: true },
       );
 
-      console.log(`User ${userId} berhasil diupgrade ke PREMIUM via Webhook.`);
       return NextResponse.json({ message: "Webhook processed, user upgraded" });
     }
 

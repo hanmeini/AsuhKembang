@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import {admin, db} from "../../../lib/firebaseAdmin";
+import { admin, db } from "../../../lib/firebaseAdmin";
 
 const fallbackTips = [
   "Minum air putih minimal 8 gelas sehari.",

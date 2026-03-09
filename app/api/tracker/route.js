@@ -44,7 +44,6 @@ export async function POST(request) {
       dailyInputs,
     );
 
-    console.log("Meminta informasi umum untuk minggu ke-", week);
     const generalInfoResultRaw = await model.generateContent(generalInfoPrompt);
     const generalInfoResponse = await generalInfoResultRaw.response;
     const generalInfo = JSON.parse(
@@ -54,7 +53,7 @@ export async function POST(request) {
         .replace(/```/g, "")
         .trim(),
     );
-    console.log("Meminta rangkuman personal...");
+
     const summaryResultRaw = await model.generateContent(summaryPrompt);
     const summaryResponse = await summaryResultRaw.response;
     const summaryText = summaryResponse.text();
@@ -82,8 +81,6 @@ export async function POST(request) {
       .doc(profileId)
       .collection("journals")
       .add(newJournalEntry);
-
-    console.log("Jurnal baru berhasil disimpan dengan ID: ", docRef.id);
 
     return NextResponse.json({ id: docRef.id, ...newJournalEntry });
   } catch (error) {

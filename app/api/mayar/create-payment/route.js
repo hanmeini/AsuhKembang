@@ -37,8 +37,6 @@ export async function POST(request) {
       endpoint = "https://api.mayar.club/hl/v1/payment/create";
     }
 
-    console.log("Menghubungi Mayar di:", endpoint);
-
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -54,11 +52,6 @@ export async function POST(request) {
         redirect_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/upgrade/success`,
       }),
     });
-
-    console.log(
-      "Redirect URL dikirim ke Mayar:",
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/upgrade/success`,
-    );
 
     const responseText = await response.text();
     let data;

@@ -106,7 +106,7 @@ export async function POST(request) {
     `;
 
     const imagePart = await urlToGenerativePart(imageUrl, "image/jpeg");
-    const visionResultRaw = await visionModel.generateContent([
+    const visionResultRaw = await model.generateContent([
       combinedPrompt,
       imagePart,
     ]);
